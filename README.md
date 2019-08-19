@@ -1,2 +1,2 @@
 # sudoku
-Just a small experiment for a Sodoku solver
+Just a small experiment for a Sudoku solver
