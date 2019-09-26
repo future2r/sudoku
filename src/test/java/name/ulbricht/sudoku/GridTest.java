@@ -1,10 +1,12 @@
 package name.ulbricht.sudoku;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -220,6 +222,122 @@ public final class GridTest {
 		// the remaining cells and values should work
 		if (!tested)
 			grid.set(column, row, value);
+	}
+
+	@ParameterizedTest
+	@MethodSource("allColumnsAndRows")
+	public void testAcceptedInitial(final int column, final int row) {
+		// create initial grid
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
+
+		if (grid.empty(column, row))
+			assertTrue(grid.accepted(column, row).length > 0);
+		else
+			assertEquals(0, grid.accepted(column, row).length);
+	}
+
+	@ParameterizedTest
+	@MethodSource("allColumnsAndRows")
+	public void testAcceptedSolved(final int column, final int row) {
+		// create initial grid
+		final var grid = Grid.ofLocked(Grids.SOLVED_PATTERN);
+
+		// all cells are filled, nothing is accepted
+		assertEquals(0, grid.accepted(column, row).length);
+	}
+
+	@Test
+	public void testAccepted() {
+		// create initial grid
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
+
+		// box 1
+		assetAccepted(grid, 2, 1, 4, 8, 9);
+		assetAccepted(grid, 1, 2, 3, 6, 8, 9);
+		assetAccepted(grid, 2, 2, 3, 8, 9);
+		assetAccepted(grid, 3, 2, 3, 6, 9);
+		assetAccepted(grid, 2, 3, 3, 4, 8, 9);
+		assetAccepted(grid, 3, 3, 2, 3, 4, 6, 9);
+
+		// box 2
+		assetAccepted(grid, 4, 1, 7, 8, 9);
+		assetAccepted(grid, 6, 1, 2, 7, 8, 9);
+		assetAccepted(grid, 5, 2, 1, 5, 6, 8, 9);
+		assetAccepted(grid, 6, 2, 1, 5, 6, 7, 8, 9);
+		assetAccepted(grid, 4, 3, 1, 5, 6, 8, 9);
+		assetAccepted(grid, 5, 3, 1, 2, 5, 6, 8, 9);
+		assetAccepted(grid, 6, 3, 1, 2, 5, 6, 8, 9);
+
+		// box 3
+		assetAccepted(grid, 7, 1, 4, 7, 9);
+		assetAccepted(grid, 9, 1, 7, 8, 9);
+		assetAccepted(grid, 8, 2, 1, 5, 7, 8, 9);
+		assetAccepted(grid, 9, 2, 3, 5, 7, 8, 9);
+		assetAccepted(grid, 7, 3, 1, 3, 4, 5, 9);
+		assetAccepted(grid, 8, 3, 1, 4, 5, 8, 9);
+		assetAccepted(grid, 9, 3, 3, 5, 8, 9);
+
+		// box 4
+		assetAccepted(grid, 1, 4, 3, 4, 6, 9);
+		assetAccepted(grid, 1, 5, 3, 4, 6, 9);
+		assetAccepted(grid, 2, 5, 3, 4, 5, 9);
+		assetAccepted(grid, 3, 5, 3, 4, 5, 6, 9);
+		assetAccepted(grid, 1, 6, 4, 6, 9);
+		assetAccepted(grid, 2, 6, 1, 4, 5, 7, 9);
+		assetAccepted(grid, 3, 6, 4, 5, 6, 7, 9);
+
+		// box 5
+		assetAccepted(grid, 4, 4, 1, 3, 5, 6, 9);
+		assetAccepted(grid, 5, 4, 1, 4, 5, 6, 9);
+		assetAccepted(grid, 6, 4, 1, 3, 4, 5, 6, 9);
+		assetAccepted(grid, 4, 5, 3, 5, 6, 8, 9);
+		assetAccepted(grid, 6, 5, 2, 3, 4, 5, 6, 8, 9);
+		assetAccepted(grid, 4, 6, 1, 5, 6, 8, 9);
+		assetAccepted(grid, 5, 6, 1, 2, 4, 5, 6, 8, 9);
+		assetAccepted(grid, 6, 6, 1, 2, 4, 5, 6, 8, 9);
+
+		// box 6
+		assetAccepted(grid, 7, 4, 4, 5, 6, 7, 9);
+		assetAccepted(grid, 8, 4, 4, 5, 7, 9);
+		assetAccepted(grid, 9, 4, 5, 6, 7, 9);
+		assetAccepted(grid, 7, 5, 4, 5, 6, 9);
+		assetAccepted(grid, 8, 5, 2, 4, 5, 8, 9);
+		assetAccepted(grid, 7, 6, 4, 5, 6, 7, 9);
+		assetAccepted(grid, 9, 6, 2, 5, 6, 7, 8, 9);
+
+		// box 7
+		assetAccepted(grid, 3, 7, 3, 4, 5, 7, 9);
+		assetAccepted(grid, 1, 8, 2, 3, 8, 9);
+		assetAccepted(grid, 2, 8, 3, 5, 7, 8, 9);
+		assetAccepted(grid, 3, 8, 2, 3, 5, 7, 9);
+		assetAccepted(grid, 1, 9, 2, 3, 4, 9);
+		assetAccepted(grid, 2, 9, 3, 4, 5, 7, 9);
+		assetAccepted(grid, 3, 9, 2, 3, 4, 5, 7, 9);
+
+		// box 8
+		assetAccepted(grid, 5, 7, 4, 5, 8, 9);
+		assetAccepted(grid, 6, 7, 3, 4, 5, 7, 8, 9);
+		assetAccepted(grid, 4, 8, 1, 3, 5, 6, 7, 8, 9);
+		assetAccepted(grid, 5, 8, 1, 5, 6, 8, 9);
+		assetAccepted(grid, 6, 8, 1, 3, 5, 6, 7, 8, 9);
+		assetAccepted(grid, 4, 9, 1, 3, 5, 6, 7, 9);
+		assetAccepted(grid, 5, 9, 1, 4, 5, 6, 9);
+		assetAccepted(grid, 6, 9, 1, 3, 4, 5, 6, 7, 9);
+
+		// box 9
+		assetAccepted(grid, 7, 7, 3, 5, 7, 9);
+		assetAccepted(grid, 8, 7, 5, 7, 9);
+		assetAccepted(grid, 9, 7, 3, 5, 7, 9);
+		assetAccepted(grid, 7, 8, 1, 3, 5, 6, 7, 9);
+		assetAccepted(grid, 8, 8, 1, 2, 5, 7, 9);
+		assetAccepted(grid, 8, 9, 1, 2, 5, 7, 9);
+		assetAccepted(grid, 9, 9, 2, 3, 5, 6, 7, 9);
+	}
+
+	private void assetAccepted(final Grid grid, final int column, final int row, final int... expected) {
+		final var accepted = grid.accepted(column, row);
+		assertArrayEquals(expected, accepted, String.format("cell %d,%d: expected: %s but was %s", column, row,
+				Arrays.toString(expected), Arrays.toString(accepted)));
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package name.ulbricht.sudoku;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Represents a Sudoku grid with 9 by 9 cells.
@@ -191,42 +192,71 @@ public final class Grid {
 	}
 
 	/**
-	 * Returns the current value of a cell from the internal data structure. The
-	 * column and row must be validated before calling this method. If the cell is
-	 * locked the value is negative.
-	 * 
-	 * @param column the column of the cell
-	 * @param row    the row of the cell
-	 * @return the current value of the cell, or a negative value if the cell is
-	 *         locked
+	 * An empty array, meaning no value is accepted.
 	 */
-	private int getRaw(final int column, final int row) {
-		return this.cells[toIndex(column, row)];
-	}
+	private static final int[] NOTHING_ACCEPTED = {};
 
 	/**
-	 * Sets the specified value to the internal data structure. The column, row and
-	 * value must be validated before calling this method. No rules are checked. If
-	 * the value is negative the cell will be locked.
+	 * Returns all values that will be accepted for this cell by the Sudoku rules.
+	 * The accepted values depend on the values of other cells in the column, row
+	 * and box. If the cell already has a value, an empty array is returned. The
+	 * returned array contains only unique accepted values without
+	 * {@link #EMPTY_VALUE}. For an empty cell at least one value will be accepted.
 	 * 
 	 * @param column the column of the cell (one-based)
 	 * @param row    the row of the cell (one-based)
-	 * @param value  the new value of the cell
+	 * @return an array with accepted values
+	 * @throws IndexOutOfBoundsException if the column or the row is invalid
 	 */
-	private void setRaw(final int column, final int row, final int value) {
-		this.cells[toIndex(column, row)] = value;
-	}
+	public int[] accepted(final int column, final int row) throws IndexOutOfBoundsException {
+		if (!empty(column, row))
+			return NOTHING_ACCEPTED;
 
-	/**
-	 * Converts the specified column and row to a linear index for accessing the
-	 * internal data structure.
-	 * 
-	 * @param column the column of the cell (one-based)
-	 * @param row    the row of the cell (one-based)
-	 * @return the linear index
-	 */
-	private static int toIndex(final int column, final int row) {
-		return ((column - 1) * GRID_SIZE) + (row - 1);
+		final var boxValues = box(column, row);
+		final var columnValues = column(column);
+		final var rowValues = row(row);
+
+		final var acceptedValues = new int[MAX_VALUE - MIN_VALUE + 1];
+		var acceptedIndex = 0;
+
+		for (var value = MIN_VALUE; value <= MAX_VALUE; value++) {
+			var found = false;
+
+			for (var boxColumn = 1; boxColumn <= BOX_SIZE; boxColumn++) {
+				for (var boxRow = 1; boxRow <= BOX_SIZE; boxRow++) {
+					if (Math.abs(boxValues[boxColumn - 1][boxRow - 1]) == value) {
+						found = true;
+						break;
+					}
+				}
+				if (found == true)
+					break;
+			}
+
+			if (!found) {
+				for (var r = 1; r <= GRID_SIZE; r++) {
+					if (Math.abs(columnValues[r - 1]) == value) {
+						found = true;
+						break;
+					}
+				}
+			}
+
+			if (!found) {
+				for (var c = 1; c <= GRID_SIZE; c++) {
+					if (Math.abs(rowValues[c - 1]) == value) {
+						found = true;
+						break;
+					}
+				}
+			}
+
+			if (!found) {
+				acceptedValues[acceptedIndex] = value;
+				acceptedIndex++;
+			}
+		}
+		return Arrays.copyOf(acceptedValues, acceptedIndex);
 	}
 
 	/**
@@ -293,9 +323,49 @@ public final class Grid {
 	}
 
 	/**
+	 * Returns the current value of a cell from the internal data structure. The
+	 * column and row must be validated before calling this method. If the cell is
+	 * locked the value is negative.
+	 * 
+	 * @param column the column of the cell
+	 * @param row    the row of the cell
+	 * @return the current value of the cell, or a negative value if the cell is
+	 *         locked
+	 */
+	private int getRaw(final int column, final int row) {
+		return this.cells[index(column, row)];
+	}
+
+	/**
+	 * Sets the specified value to the internal data structure. The column, row and
+	 * value must be validated before calling this method. No rules are checked. If
+	 * the value is negative the cell will be locked.
+	 * 
+	 * @param column the column of the cell (one-based)
+	 * @param row    the row of the cell (one-based)
+	 * @param value  the new value of the cell
+	 */
+	private void setRaw(final int column, final int row, final int value) {
+		this.cells[index(column, row)] = value;
+	}
+
+	/**
+	 * Converts the specified column and row to a linear index for accessing the
+	 * internal data structure.
+	 * 
+	 * @param column the column of the cell (one-based)
+	 * @param row    the row of the cell (one-based)
+	 * @return the linear index
+	 */
+	private static int index(final int column, final int row) {
+		return ((column - 1) * GRID_SIZE) + (row - 1);
+	}
+
+	/**
 	 * Checks if the specified value already exsists in the current box. The column,
 	 * row and value must be validated before calling this method. The specified
-	 * cell is ignored.
+	 * cell is ignored. This method returns as soon as the values is found in the
+	 * box.
 	 * 
 	 * @param column the column of the cell (one-based)
 	 * @param row    the row of the cell (one-based)
@@ -303,15 +373,76 @@ public final class Grid {
 	 * @return {@code true} if the value exists, otherwise {@code false}
 	 */
 	private boolean existsInBox(final int column, final int row, final int value) {
+		final var values = box(column, row);
 		final var startColumn = boxStart(column);
 		final var startRow = boxStart(row);
-		for (var c = startColumn; c < (startColumn + BOX_SIZE); c++) {
-			for (var r = startRow; r < (startRow + BOX_SIZE); r++) {
-				if ((c != column || r != row) && get(c, r) == value)
+		for (var boxColumn = 1; boxColumn <= BOX_SIZE; boxColumn++) {
+			for (var boxRow = 1; boxRow <= BOX_SIZE; boxRow++) {
+				if (((boxColumn + startColumn - 1) != column || (boxRow + startRow - 1) != row)
+						&& Math.abs(values[boxColumn - 1][boxRow - 1]) == value)
 					return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if the specified value already exsists in the current column. The
+	 * column, row and value must be validated before calling this method. The
+	 * specified cell is ignored. This method returns as soon as the values is found
+	 * in the column.
+	 * 
+	 * @param column the column of the cell (one-based)
+	 * @param row    the row of the cell (one-based)
+	 * @param value  the value to find
+	 * @return {@code true} if the value exists, otherwise {@code false}
+	 */
+	private boolean existsInColumn(final int column, final int row, final int value) {
+		final var values = column(column);
+		for (var r = 1; r <= GRID_SIZE; r++) {
+			if (r != row && Math.abs(values[r - 1]) == value)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if the specified value already exsists in the current row. The column,
+	 * row and value must be validated before calling this method. The specified
+	 * cell is ignored. This method returns as soon as the values is found in the
+	 * row.
+	 * 
+	 * @param column the column of the cell (one-based)
+	 * @param row    the row of the cell (one-based)
+	 * @param value  the value to find
+	 * @return {@code true} if the value exists, otherwise {@code false}
+	 */
+	private boolean existsInRow(final int column, final int row, final int value) {
+		final var values = row(row);
+		for (var c = 1; c <= GRID_SIZE; c++) {
+			if (c != column && Math.abs(values[c - 1]) == value)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the values of a single box. The column and row must be validated
+	 * before calling this method.
+	 * 
+	 * @param column the column
+	 * @return an array of size {@link #GRID_SIZE} with the values of the column
+	 */
+	private int[][] box(final int column, final int row) {
+		final var values = new int[BOX_SIZE][BOX_SIZE];
+		final var startColumn = boxStart(column);
+		final var startRow = boxStart(row);
+		for (var boxColumn = 1; boxColumn <= BOX_SIZE; boxColumn++) {
+			for (var boxRow = 1; boxRow <= BOX_SIZE; boxRow++) {
+				values[boxColumn - 1][boxRow - 1] = getRaw(startColumn + boxColumn - 1, startRow + boxRow - 1);
+			}
+		}
+		return values;
 	}
 
 	/**
@@ -325,39 +456,33 @@ public final class Grid {
 	}
 
 	/**
-	 * Checks if the specified value already exsists in the current column. The
-	 * column, row and value must be validated before calling this method. The
-	 * specified cell is ignored.
+	 * Returns the values of a single column. The column must be validated before
+	 * calling this method.
 	 * 
-	 * @param column the column of the cell (one-based)
-	 * @param row    the row of the cell (one-based)
-	 * @param value  the value to find
-	 * @return {@code true} if the value exists, otherwise {@code false}
+	 * @param column the column
+	 * @return an array of size {@link #GRID_SIZE} with the values of the column
 	 */
-	private boolean existsInColumn(final int column, final int row, final int value) {
-		for (var r = 1; r <= GRID_SIZE; r++) {
-			if (r != row && get(column, r) == value)
-				return true;
+	private int[] column(final int column) {
+		final var values = new int[GRID_SIZE];
+		for (var row = 1; row <= GRID_SIZE; row++) {
+			values[row - 1] = getRaw(column, row);
 		}
-		return false;
+		return values;
 	}
 
 	/**
-	 * Checks if the specified value already exsists in the current row. The column,
-	 * row and value must be validated before calling this method. The specified
-	 * cell is ignored.
+	 * Returns the values of a single row. The row must be validated before calling
+	 * this method.
 	 * 
-	 * @param column the column of the cell (one-based)
-	 * @param row    the row of the cell (one-based)
-	 * @param value  the value to find
-	 * @return {@code true} if the value exists, otherwise {@code false}
+	 * @param row the row
+	 * @return an array of size {@link #GRID_SIZE} with the values of the row
 	 */
-	private boolean existsInRow(final int column, final int row, final int value) {
-		for (var c = 1; c <= GRID_SIZE; c++) {
-			if (c != column && get(c, row) == value)
-				return true;
+	private int[] row(final int row) {
+		final var values = new int[GRID_SIZE];
+		for (var column = 1; column <= GRID_SIZE; column++) {
+			values[column - 1] = getRaw(column, row);
 		}
-		return false;
+		return values;
 	}
 
 	@Override
