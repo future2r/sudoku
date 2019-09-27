@@ -1,6 +1,7 @@
 package name.ulbricht.sudoku.grid;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 final class GridImpl extends AbstractGrid {
 
@@ -37,7 +38,7 @@ final class GridImpl extends AbstractGrid {
 
 	@Override
 	public int hashCode() {
-		return this.values.hashCode();
+		return Objects.hash(columns(), rows(), this.values.hashCode());
 	}
 
 	@Override
@@ -47,16 +48,16 @@ final class GridImpl extends AbstractGrid {
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
 		final var other = (GridImpl) obj;
-		return Arrays.equals(this.values, other.values);
+		return columns() == other.columns() && rows() == other.rows() && Arrays.equals(this.values, other.values);
 	}
 
 	@Override
 	public String toString() {
-		final var sb = new StringBuilder();
-		for (var rowIndex = 1; rowIndex <= this.rows(); rowIndex++) {
+		final var sb = new StringBuilder(String.format("columns=%d, rows=%d, values=\n", columns(), rows()));
+		for (var rowIndex = 1; rowIndex <= rows(); rowIndex++) {
 			if (rowIndex > 1)
-					sb.append('\n');
-			for (var columnIndex = 1; columnIndex <= this.columns(); columnIndex++) {
+				sb.append('\n');
+			for (var columnIndex = 1; columnIndex <= columns(); columnIndex++) {
 				if (columnIndex > 1)
 					sb.append(", ");
 				sb.append(get(columnIndex, rowIndex));

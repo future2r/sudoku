@@ -1,5 +1,6 @@
 package name.ulbricht.sudoku;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -98,7 +99,8 @@ public final class SudokuGridTest {
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRowsAndValues")
-	public void testSetGetClearValues(final int columnIndex, final int rowIndex, final int value) throws RuleViolationException {
+	public void testSetGetClearValues(final int columnIndex, final int rowIndex, final int value)
+			throws RuleViolationException {
 		final var grid = SudokuGrid.empty();
 
 		grid.set(columnIndex, rowIndex, value);
@@ -167,7 +169,8 @@ public final class SudokuGridTest {
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRowsAndValues")
-	public void testLockUnlock(final int columnIndex, final int rowIndex, final int value) throws RuleViolationException {
+	public void testLockUnlock(final int columnIndex, final int rowIndex, final int value)
+			throws RuleViolationException {
 		final var grid = SudokuGrid.empty();
 
 		grid.lock(columnIndex, rowIndex, value);
@@ -184,9 +187,8 @@ public final class SudokuGridTest {
 	public void testLockEmpty(final int columnIndex, final int rowIndex) {
 		final var grid = SudokuGrid.empty();
 
-		assertEquals("Cannot lock empty cell",
-				assertThrows(IllegalArgumentException.class, () -> grid.lock(columnIndex, rowIndex, SudokuGrid.EMPTY_VALUE))
-						.getMessage());
+		assertEquals("Cannot lock empty cell", assertThrows(IllegalArgumentException.class,
+				() -> grid.lock(columnIndex, rowIndex, SudokuGrid.EMPTY_VALUE)).getMessage());
 	}
 
 	@ParameterizedTest
@@ -199,23 +201,27 @@ public final class SudokuGridTest {
 		var tested = false;
 
 		// same value in same box
-		if (value == 3 && (columnIndex >= 7 && columnIndex <= 9) && (rowIndex >= 4 && rowIndex <= 6) && !(columnIndex == 8 && rowIndex == 4)) {
+		if (value == 3 && (columnIndex >= 7 && columnIndex <= 9) && (rowIndex >= 4 && rowIndex <= 6)
+				&& !(columnIndex == 8 && rowIndex == 4)) {
 			assertEquals("value 3 already exists in box",
-					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value)).getMessage());
+					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value))
+							.getMessage());
 			tested = true;
 		}
 
 		// same value in same column
 		if (!tested && value == 3 && columnIndex == 8 && rowIndex != 4) {
 			assertEquals("value 3 already exists in column " + columnIndex,
-					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value)).getMessage());
+					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value))
+							.getMessage());
 			tested = true;
 		}
 
 		// same value in same row
 		if (!tested && value == 3 && rowIndex == 4 && columnIndex != 8) {
 			assertEquals("value 3 already exists in row " + rowIndex,
-					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value)).getMessage());
+					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value))
+							.getMessage());
 			tested = true;
 		}
 
@@ -334,10 +340,25 @@ public final class SudokuGridTest {
 		assetAccepted(grid, 9, 9, 2, 3, 5, 6, 7, 9);
 	}
 
-	private void assetAccepted(final SudokuGrid grid, final int columnIndex, final int rowIndex, final int... expected) {
+	private void assetAccepted(final SudokuGrid grid, final int columnIndex, final int rowIndex,
+			final int... expected) {
 		final var accepted = grid.accepted(columnIndex, rowIndex);
-		assertArrayEquals(expected, accepted, String.format("cell %d,%d: expected: %s but was %s", columnIndex, rowIndex,
-				Arrays.toString(expected), Arrays.toString(accepted)));
+		assertArrayEquals(expected, accepted, String.format("cell %d,%d: expected: %s but was %s", columnIndex,
+				rowIndex, Arrays.toString(expected), Arrays.toString(accepted)));
+	}
+
+	@Test
+	public void testHashCodeAndEquals() {
+		final var grid1 = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
+		final var grid2 = SudokuGrid.ofLocked(Sudokus.SOLVED_PATTERN);
+
+		assertEquals(grid1, grid1);
+		assertEquals(grid2, grid2);
+
+		assertNotEquals(grid1, grid2);
+		assertNotEquals(grid1.hashCode(), grid2.hashCode());
+		assertFalse(grid1.equals(grid2));
+		assertFalse(grid2.equals(grid1));
 	}
 
 	@Test
@@ -368,5 +389,13 @@ public final class SudokuGridTest {
 				+ "| .  .  . | .  .  . |<8> .  . |\n" //
 				+ "-------------------------------\n";
 		assertEquals(expected, grid.toString());
+	}
+
+	@Test
+	public void testCopy() {
+		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
+		final var copy = SudokuGrid.copyOf(grid);
+
+		assertEquals(copy, grid);
 	}
 }

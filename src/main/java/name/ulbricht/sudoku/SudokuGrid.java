@@ -3,6 +3,7 @@ package name.ulbricht.sudoku;
 import static java.lang.Math.abs;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 import name.ulbricht.sudoku.grid.Column;
 import name.ulbricht.sudoku.grid.Grid;
@@ -45,7 +46,7 @@ public final class SudokuGrid {
 	 * @return a new empty grid
 	 */
 	public static SudokuGrid empty() {
-		return new SudokuGrid();
+		return new SudokuGrid(Grid.of(GRID_SIZE, GRID_SIZE));
 	}
 
 	/**
@@ -80,10 +81,20 @@ public final class SudokuGrid {
 		}
 	}
 
-	private final Grid grid = Grid.of(GRID_SIZE, GRID_SIZE);
+	/**
+	 * Creates an independent copy the specified Sudoku grid.
+	 * 
+	 * @param original the original to copy from
+	 * @return an independent copy
+	 */
+	public static SudokuGrid copyOf(final SudokuGrid original) {
+		return new SudokuGrid(Grid.copyOf(original.grid));
+	}
 
-	private SudokuGrid() {
-		// hidden
+	private final Grid grid;
+
+	private SudokuGrid(final Grid grid) {
+		this.grid = grid;
 	}
 
 	/**
@@ -297,6 +308,21 @@ public final class SudokuGrid {
 
 	private static int boxStart(final int index) {
 		return ((index - 1) / BOX_SIZE) * BOX_SIZE + 1;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.grid.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || this.getClass() != obj.getClass())
+			return false;
+		final var other = (SudokuGrid) obj;
+		return Objects.equals(this.grid, other.grid);
 	}
 
 	@Override

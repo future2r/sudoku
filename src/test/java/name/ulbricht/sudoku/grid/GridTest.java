@@ -80,7 +80,8 @@ public final class GridTest {
 	public void testToString() {
 		final var grid = fillGrid(Grid.of(9, 5));
 
-		assertEquals("11, 21, 31, 41, 51, 61, 71, 81, 91\n" //
+		assertEquals("columns=9, rows=5, values=\n" //
+				+ "11, 21, 31, 41, 51, 61, 71, 81, 91\n" //
 				+ "12, 22, 32, 42, 52, 62, 72, 82, 92\n" //
 				+ "13, 23, 33, 43, 53, 63, 73, 83, 93\n" //
 				+ "14, 24, 34, 44, 54, 64, 74, 84, 94\n" //
