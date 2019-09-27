@@ -35,4 +35,31 @@ final class RowImpl implements Row {
 	public void set(int columnIndex, int newValue) {
 		this.grid.set(columnIndex, this.rowIndex, newValue);
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.rowIndex, this.grid);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || this.getClass() != obj.getClass())
+			return false;
+		final var other = (RowImpl) obj;
+		return this.rowIndex == other.rowIndex && Objects.equals(this.grid, other.grid);
+	}
+
+	@Override
+	public String toString() {
+		final var sb = new StringBuilder(String.format("rowIndex=%d, row=[", this.rowIndex));
+		for (var columnIndex = 1; columnIndex <= this.columns(); columnIndex++) {
+			if (columnIndex > 1)
+				sb.append(", ");
+			sb.append(get(columnIndex));
+		}
+		sb.append(']');
+		return sb.toString();
+	}
 }

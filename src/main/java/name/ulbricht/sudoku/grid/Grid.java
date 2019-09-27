@@ -19,6 +19,25 @@ public interface Grid {
 	}
 
 	/**
+	 * Creates an independent copy the specified grid.
+	 * 
+	 * @param original the original to copy from
+	 * @return an independent copy
+	 */
+	static Grid copyOf(final Grid original) {
+		if (original instanceof GridImpl)
+			return GridImpl.copyOf((GridImpl) original);
+
+		final var copy = Grid.of(original.columns(), original.rows());
+		for (var columnIndex = 1; columnIndex < copy.columns(); columnIndex++) {
+			for (var rowIndex = 1; rowIndex < copy.rows(); rowIndex++) {
+				copy.set(columnIndex, rowIndex, original.get(columnIndex, rowIndex));
+			}
+		}
+		return copy;
+	}
+
+	/**
 	 * Returns the number of columns in this grid.
 	 * 
 	 * @return the number of columns
@@ -48,7 +67,7 @@ public interface Grid {
 	 * 
 	 * @param columnIndex the one-based column index
 	 * @param rowIndex    the one-based row index
-	 * @param newValue  the new value
+	 * @param newValue    the new value
 	 */
 	void set(final int columnIndex, final int rowIndex, final int newValue);
 

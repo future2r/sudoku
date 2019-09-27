@@ -1,6 +1,8 @@
 package name.ulbricht.sudoku.grid;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -60,6 +62,35 @@ public final class GridTest {
 		assertEquals(42, grid.get(5, 2));
 	}
 
+	@Test
+	public void testHashCodeAndEquals() {
+		final var grid1 = Grid.of(9, 5);
+		final var grid2 = fillGrid(Grid.of(9, 5));
+
+		assertEquals(grid1, grid1);
+		assertEquals(grid2, grid2);
+
+		assertNotEquals(grid1, grid2);
+		assertNotEquals(grid1.hashCode(), grid2.hashCode());
+		assertFalse(grid1.equals(grid2));
+		assertFalse(grid2.equals(grid1));
+	}
+
+	@Test
+	public void testToString() {
+		final var grid = fillGrid(Grid.of(9, 5));
+
+		assertEquals("11, 21, 31, 41, 51, 61, 71, 81, 91\n" //
+				+ "12, 22, 32, 42, 52, 62, 72, 82, 92\n" //
+				+ "13, 23, 33, 43, 53, 63, 73, 83, 93\n" //
+				+ "14, 24, 34, 44, 54, 64, 74, 84, 94\n" //
+				+ "15, 25, 35, 45, 55, 65, 75, 85, 95", //
+				grid.toString());
+
+		assertEquals("columnIndex=2, column=[21, 22, 23, 24, 25]", grid.column(2).toString());
+		assertEquals("rowIndex=3, row=[13, 23, 33, 43, 53, 63, 73, 83, 93]", grid.row(3).toString());
+	}
+
 	private static Grid fillGrid(final Grid grid) {
 		for (var columnIndex = 1; columnIndex <= grid.columns(); columnIndex++) {
 			for (var rowIndex = 1; rowIndex <= grid.rows(); rowIndex++) {
@@ -68,4 +99,5 @@ public final class GridTest {
 		}
 		return grid;
 	}
+
 }
