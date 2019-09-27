@@ -19,7 +19,7 @@ import java.nio.file.Path;
  * the cell values, a single dot represents an empty cell. Empty lines and lines
  * starting with the comment character '#' are ignored.
  */
-public final class GridFile {
+public final class SudokuFile {
 
 	private static final char COMMENT_PREFIX = '#';
 	private static final char EMPTY_CELL = '.';
@@ -32,7 +32,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the file
 	 */
-	public static Grid parse(final Path file) throws IOException {
+	public static SudokuGrid parse(final Path file) throws IOException {
 		return parse(file, true);
 	}
 
@@ -44,7 +44,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the file
 	 */
-	public static Grid parse(final Path file, final boolean locked) throws IOException {
+	public static SudokuGrid parse(final Path file, final boolean locked) throws IOException {
 		try (final var in = Files.newInputStream(file)) {
 			return parse(in, locked);
 		}
@@ -58,7 +58,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the data
 	 */
-	public static Grid parse(final InputStream in) throws IOException {
+	public static SudokuGrid parse(final InputStream in) throws IOException {
 		return parse(in, true);
 	}
 
@@ -70,7 +70,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the data
 	 */
-	public static Grid parse(final InputStream in, final boolean locked) throws IOException {
+	public static SudokuGrid parse(final InputStream in, final boolean locked) throws IOException {
 		try (final var reader = new InputStreamReader(in)) {
 			return parse(reader, locked);
 		}
@@ -84,7 +84,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the data
 	 */
-	public static Grid parse(final Reader in) throws IOException {
+	public static SudokuGrid parse(final Reader in) throws IOException {
 		return parse(in, true);
 	}
 
@@ -96,14 +96,14 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the data
 	 */
-	public static Grid parse(final Reader in, final boolean locked) throws IOException {
+	public static SudokuGrid parse(final Reader in, final boolean locked) throws IOException {
 		try (final var br = new BufferedReader(in)) {
-			final var grid = Grid.empty();
+			final var grid = SudokuGrid.empty();
 
 			var row = 1;
 			String line = null;
 			while ((line = br.readLine()) != null) {
-				if (row > Grid.GRID_SIZE)
+				if (row > SudokuGrid.GRID_SIZE)
 					throw new IOException("Too many rows");
 
 				if (line.length() > 0 && line.charAt(0) == COMMENT_PREFIX)
@@ -113,7 +113,7 @@ public final class GridFile {
 				row++;
 			}
 
-			if (row < Grid.GRID_SIZE)
+			if (row < SudokuGrid.GRID_SIZE)
 				throw new IOException("Too few rows");
 
 			return grid;
@@ -128,7 +128,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the string
 	 */
-	public static Grid parse(final String s) throws IOException {
+	public static SudokuGrid parse(final String s) throws IOException {
 		return parse(s, true);
 	}
 
@@ -140,7 +140,7 @@ public final class GridFile {
 	 * @return a new grid
 	 * @throws IOException if there is a problem reading the string
 	 */
-	public static Grid parse(final String s, final boolean locked) throws IOException {
+	public static SudokuGrid parse(final String s, final boolean locked) throws IOException {
 		try (final var in = new StringReader(s)) {
 			return parse(in, locked);
 		}
@@ -148,18 +148,19 @@ public final class GridFile {
 
 	/**
 	 * Parses a signle line into a grid row.
-	 * @param grid the grid to write to
-	 * @param row the row of the grid to write to
-	 * @param line the line to parse from
+	 * 
+	 * @param grid   the grid to write to
+	 * @param row    the row of the grid to write to
+	 * @param line   the line to parse from
 	 * @param locked defines if the non-empty cells should be locked
 	 * @throws IOException if there is a problem reading the line
 	 */
-	private static void parseLine(final Grid grid, final int row, final String line, final boolean locked)
+	private static void parseLine(final SudokuGrid grid, final int row, final String line, final boolean locked)
 			throws IOException {
-		if (line.length() != Grid.GRID_SIZE)
+		if (line.length() != SudokuGrid.GRID_SIZE)
 			throw new IOException("Unexpected line length: " + line.length());
 
-		for (var column = 1; column <= Grid.GRID_SIZE; column++) {
+		for (var column = 1; column <= SudokuGrid.GRID_SIZE; column++) {
 			var c = line.charAt(column - 1);
 
 			if (c == EMPTY_CELL)
@@ -184,7 +185,7 @@ public final class GridFile {
 	 * @param grid the grid to write
 	 * @throws IOException if there is a problem while writing the grid data
 	 */
-	public static void write(final Path file, final Grid grid) throws IOException {
+	public static void write(final Path file, final SudokuGrid grid) throws IOException {
 		try (final var out = Files.newOutputStream(file)) {
 			write(out, grid);
 		}
@@ -197,7 +198,7 @@ public final class GridFile {
 	 * @param grid the grid to write
 	 * @throws IOException if there is a problem while writing the grid data
 	 */
-	public static void write(final OutputStream out, final Grid grid) throws IOException {
+	public static void write(final OutputStream out, final SudokuGrid grid) throws IOException {
 		try (final var writer = new OutputStreamWriter(out)) {
 			write(writer, grid);
 		}
@@ -210,15 +211,15 @@ public final class GridFile {
 	 * @param grid the grid to write
 	 * @throws IOException if there is a problem while writing the grid data
 	 */
-	public static void write(final Writer out, final Grid grid) throws IOException {
+	public static void write(final Writer out, final SudokuGrid grid) throws IOException {
 		final var lineSeparator = System.getProperty("line.separator");
 
-		for (var row = 1; row <= Grid.GRID_SIZE; row++) {
+		for (var row = 1; row <= SudokuGrid.GRID_SIZE; row++) {
 			if (row > 1)
 				out.write(lineSeparator);
-			for (var column = 1; column <= Grid.GRID_SIZE; column++) {
+			for (var column = 1; column <= SudokuGrid.GRID_SIZE; column++) {
 				final var value = grid.get(column, row);
-				if (value == Grid.EMPTY_VALUE)
+				if (value == SudokuGrid.EMPTY_VALUE)
 					out.write(EMPTY_CELL);
 				else
 					out.write(value + 0x30);

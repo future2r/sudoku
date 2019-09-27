@@ -1,6 +1,6 @@
 package name.ulbricht.sudoku;
 
-final class Grids {
+final class Sudokus {
 
 	static final String INITIAL_PATTERN = "5.1.3..6.\n" //
 			+ "...4..2..\n" //
