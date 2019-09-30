@@ -4,21 +4,23 @@ import java.util.Objects;
 
 /**
  * Represents a section of a grid which is a grid itself.
+ * 
+ * @param <T> the type of the values
  */
-public final class IntSection {
+public final class Section<T> {
 
-	static IntSection of(final IntGrid grid, final int startColumnIndex, final int startRowIndex, final int columns,
+	static <T> Section<T> of(final Grid<T> grid, final int startColumnIndex, final int startRowIndex, final int columns,
 			final int rows) {
-		return new IntSection(grid, startColumnIndex, startRowIndex, columns, rows);
+		return new Section<>(grid, startColumnIndex, startRowIndex, columns, rows);
 	}
 
-	private final IntGrid grid;
+	private final Grid<T> grid;
 	private final int startColumnIndex;
 	private final int startRowIndex;
 	private final int columns;
 	private final int rows;
 
-	private IntSection(final IntGrid grid, final int startColumnIndex, final int startRowIndex, final int columns,
+	private Section(final Grid<T> grid, final int startColumnIndex, final int startRowIndex, final int columns,
 			final int rows) {
 
 		this.grid = Objects.requireNonNull(grid);
@@ -86,7 +88,7 @@ public final class IntSection {
 	 * @param rowIndex    the one-based row index
 	 * @return the value in the specified coordinates
 	 */
-	public int get(final int columnIndex, final int rowIndex) {
+	public T get(final int columnIndex, final int rowIndex) {
 		return this.grid.get(startColumnIndex + columnIndex - 1, startRowIndex + rowIndex - 1);
 	}
 
@@ -98,7 +100,7 @@ public final class IntSection {
 	 * @param rowIndex    the one-based row index
 	 * @param newValue    the new value
 	 */
-	public void set(final int columnIndex, final int rowIndex, final int newValue) {
+	public void set(final int columnIndex, final int rowIndex, final T newValue) {
 		this.grid.set(startColumnIndex + columnIndex - 1, startRowIndex + rowIndex - 1, newValue);
 	}
 
@@ -113,7 +115,7 @@ public final class IntSection {
 			return true;
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
-		final var other = (IntSection) obj;
+		final var other = (Section<?>) obj;
 		return this.startColumnIndex == other.startColumnIndex && this.startRowIndex == other.startRowIndex
 				&& this.columns == other.columns && this.rows == other.rows && Objects.equals(this.grid, other.grid);
 	}
