@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import name.ulbricht.sudoku.grid.Column;
-import name.ulbricht.sudoku.grid.Grid;
-import name.ulbricht.sudoku.grid.Row;
-import name.ulbricht.sudoku.grid.Section;
+import name.ulbricht.sudoku.grid.IntColumn;
+import name.ulbricht.sudoku.grid.IntGrid;
+import name.ulbricht.sudoku.grid.IntRow;
+import name.ulbricht.sudoku.grid.IntSection;
 
 /**
  * Represents a Sudoku grid with 9 by 9 cells.
@@ -46,7 +46,7 @@ public final class SudokuGrid {
 	 * @return a new empty grid
 	 */
 	public static SudokuGrid empty() {
-		return new SudokuGrid(Grid.of(GRID_SIZE, GRID_SIZE));
+		return new SudokuGrid(IntGrid.of(GRID_SIZE, GRID_SIZE));
 	}
 
 	/**
@@ -88,13 +88,13 @@ public final class SudokuGrid {
 	 * @return an independent copy
 	 */
 	public static SudokuGrid copyOf(final SudokuGrid original) {
-		return new SudokuGrid(Grid.copyOf(original.grid));
+		return new SudokuGrid(IntGrid.copyOf(original.values));
 	}
 
-	private final Grid grid;
+	private final IntGrid values;
 
-	private SudokuGrid(final Grid grid) {
-		this.grid = grid;
+	private SudokuGrid(final IntGrid grid) {
+		this.values = grid;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public final class SudokuGrid {
 	 * @see #empty(int, int)
 	 */
 	public int get(final int columnIndex, final int rowIndex) throws IndexOutOfBoundsException {
-		return abs(grid.get(columnIndex, rowIndex));
+		return abs(values.get(columnIndex, rowIndex));
 	}
 
 	/**
@@ -130,12 +130,12 @@ public final class SudokuGrid {
 	 */
 	public void set(final int columnIndex, final int rowIndex, final int newValue)
 			throws IndexOutOfBoundsException, IllegalArgumentException, RuleViolationException {
-		final var currentValue = grid.get(columnIndex, rowIndex);
+		final var currentValue = values.get(columnIndex, rowIndex);
 		if (currentValue < 0)
 			throw new RuleViolationException("Cannot change a locked cell");
 		if (currentValue != newValue) {
 			validateRules(columnIndex, rowIndex, validValue(newValue));
-			this.grid.set(columnIndex, rowIndex, newValue);
+			this.values.set(columnIndex, rowIndex, newValue);
 		}
 	}
 
@@ -186,10 +186,10 @@ public final class SudokuGrid {
 			throws IndexOutOfBoundsException, IllegalArgumentException, RuleViolationException {
 		if (validValue(newValue) == EMPTY_VALUE)
 			throw new IllegalArgumentException("Cannot lock empty cell");
-		final var currentValue = grid.get(columnIndex, rowIndex);
+		final var currentValue = values.get(columnIndex, rowIndex);
 		if (abs(currentValue) != newValue)
 			validateRules(columnIndex, rowIndex, newValue);
-		this.grid.set(columnIndex, rowIndex, -newValue);
+		this.values.set(columnIndex, rowIndex, -newValue);
 	}
 
 	/**
@@ -204,7 +204,7 @@ public final class SudokuGrid {
 	 * @see #lock(int, int, int)
 	 */
 	public boolean locked(final int columnIndex, final int rowIndex) throws IndexOutOfBoundsException {
-		return grid.get(columnIndex, rowIndex) < 0;
+		return values.get(columnIndex, rowIndex) < 0;
 	}
 
 	/**
@@ -218,7 +218,7 @@ public final class SudokuGrid {
 	 */
 	public void unlock(final int columnIndex, final int rowIndex) throws IndexOutOfBoundsException {
 		if (locked(columnIndex, rowIndex))
-			this.grid.set(columnIndex, rowIndex, abs(this.grid.get(columnIndex, rowIndex)));
+			this.values.set(columnIndex, rowIndex, abs(this.values.get(columnIndex, rowIndex)));
 	}
 
 	public boolean solved() {
@@ -251,9 +251,9 @@ public final class SudokuGrid {
 		final var candidates = new int[MAX_VALUE - MIN_VALUE + 1];
 		var candidatesdIndex = 0;
 
-		final var box = this.grid.section(boxStart(columnIndex), boxStart(rowIndex), BOX_SIZE, BOX_SIZE);
-		final var column = this.grid.column(columnIndex);
-		final var row = this.grid.row(rowIndex);
+		final var box = this.values.section(boxStart(columnIndex), boxStart(rowIndex), BOX_SIZE, BOX_SIZE);
+		final var column = this.values.column(columnIndex);
+		final var row = this.values.row(rowIndex);
 
 		for (var value = MIN_VALUE; value <= MAX_VALUE; value++) {
 
@@ -278,18 +278,18 @@ public final class SudokuGrid {
 	private void validateRules(final int columnIndex, final int rowIndex, final int newValue)
 			throws RuleViolationException {
 		if (newValue != EMPTY_VALUE) {
-			if (existsInBox(grid.section(boxStart(columnIndex), boxStart(rowIndex), BOX_SIZE, BOX_SIZE), newValue))
+			if (existsInBox(values.section(boxStart(columnIndex), boxStart(rowIndex), BOX_SIZE, BOX_SIZE), newValue))
 				throw new RuleViolationException(String.format("value %d already exists in box", newValue));
-			if (existsInColumn(this.grid.column(columnIndex), newValue))
+			if (existsInColumn(this.values.column(columnIndex), newValue))
 				throw new RuleViolationException(
 						String.format("value %d already exists in column %d", newValue, columnIndex));
-			if (existsInRow(this.grid.row(rowIndex), newValue))
+			if (existsInRow(this.values.row(rowIndex), newValue))
 				throw new RuleViolationException(
 						String.format("value %d already exists in row %d", newValue, rowIndex));
 		}
 	}
 
-	private boolean existsInBox(final Section box, final int value) {
+	private boolean existsInBox(final IntSection box, final int value) {
 		for (var column = 1; column <= box.columns(); column++) {
 			for (var row = 1; row <= box.rows(); row++) {
 				if (abs(box.get(column, row)) == value)
@@ -299,7 +299,7 @@ public final class SudokuGrid {
 		return false;
 	}
 
-	private boolean existsInColumn(final Column column, final int value) {
+	private boolean existsInColumn(final IntColumn column, final int value) {
 		for (var row = 1; row <= column.rows(); row++) {
 			if (abs(column.get(row)) == value)
 				return true;
@@ -307,7 +307,7 @@ public final class SudokuGrid {
 		return false;
 	}
 
-	private boolean existsInRow(final Row row, final int value) {
+	private boolean existsInRow(final IntRow row, final int value) {
 		for (var column = 1; column <= row.columns(); column++) {
 			if (abs(row.get(column)) == value)
 				return true;
@@ -321,7 +321,7 @@ public final class SudokuGrid {
 
 	@Override
 	public int hashCode() {
-		return this.grid.hashCode();
+		return this.values.hashCode();
 	}
 
 	@Override
@@ -331,7 +331,7 @@ public final class SudokuGrid {
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
 		final var other = (SudokuGrid) obj;
-		return Objects.equals(this.grid, other.grid);
+		return Objects.equals(this.values, other.values);
 	}
 
 	@Override
@@ -342,7 +342,7 @@ public final class SudokuGrid {
 		for (var rowIndex = 1; rowIndex <= GRID_SIZE; rowIndex++) {
 			sb.append('|');
 			for (var columnIndex = 1; columnIndex <= GRID_SIZE; columnIndex++) {
-				final var value = grid.get(columnIndex, rowIndex);
+				final var value = values.get(columnIndex, rowIndex);
 				sb.append(value < 0 ? '<' : ' ');
 				sb.append(value != EMPTY_VALUE ? (char) (abs(value) + 0x30) : '.');
 				sb.append(value < 0 ? '>' : ' ');

@@ -7,16 +7,16 @@ import java.util.Objects;
  * depends on the number of rows in the grid. Values can be accessed by row
  * index. This index is one-based.
  */
-public final class Column {
+public final class IntColumn {
 
-	static Column of(final Grid grid, final int columnIndex) {
-		return new Column(grid, columnIndex);
+	static IntColumn of(final IntGrid grid, final int columnIndex) {
+		return new IntColumn(grid, columnIndex);
 	}
 
-	private final Grid grid;
+	private final IntGrid grid;
 	private final int columnIndex;
 
-	private Column(final Grid grid, final int columnIndex) {
+	private IntColumn(final IntGrid grid, final int columnIndex) {
 		this.grid = Objects.requireNonNull(grid);
 		this.columnIndex = columnIndex;
 	}
@@ -71,7 +71,7 @@ public final class Column {
 			return true;
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
-		final var other = (Column) obj;
+		final var other = (IntColumn) obj;
 		return this.columnIndex == other.columnIndex && Objects.equals(this.grid, other.grid);
 	}
 

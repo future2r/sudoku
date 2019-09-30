@@ -7,26 +7,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public final class GridTest {
+public final class IntGridTest {
 
 	@Test
 	public void testCreate() {
-		final var grid = Grid.of(9, 5);
+		final var grid = IntGrid.of(9, 5);
 		assertEquals(9, grid.columns());
 		assertEquals(5, grid.rows());
 
 		var expectedMessage = "columns must be > 0";
-		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> Grid.of(0, 5)).getMessage());
-		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> Grid.of(-1, 5)).getMessage());
+		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> IntGrid.of(0, 5)).getMessage());
+		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> IntGrid.of(-1, 5)).getMessage());
 
 		expectedMessage = "rows must be > 0";
-		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> Grid.of(9, 0)).getMessage());
-		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> Grid.of(9, -1)).getMessage());
+		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> IntGrid.of(9, 0)).getMessage());
+		assertEquals(expectedMessage, assertThrows(IllegalArgumentException.class, () -> IntGrid.of(9, -1)).getMessage());
 	}
 
 	@Test
 	public void testColumn() {
-		final var grid = fillGrid(Grid.of(9, 5));
+		final var grid = fillGrid(IntGrid.of(9, 5));
 
 		for (var columnIndex = 1; columnIndex <= 9; columnIndex++) {
 			final var column = grid.column(columnIndex);
@@ -37,7 +37,7 @@ public final class GridTest {
 
 	@Test
 	public void testRow() {
-		final var grid = fillGrid(Grid.of(9, 5));
+		final var grid = fillGrid(IntGrid.of(9, 5));
 
 		for (var rowIndex = 1; rowIndex <= 5; rowIndex++) {
 			final var row = grid.row(rowIndex);
@@ -48,7 +48,7 @@ public final class GridTest {
 
 	@Test
 	public void testSection() {
-		final var grid = Grid.of(9, 5);
+		final var grid = IntGrid.of(9, 5);
 
 		final var section = grid.section(4, 2, 3, 2);
 
@@ -64,8 +64,8 @@ public final class GridTest {
 
 	@Test
 	public void testHashCodeAndEquals() {
-		final var grid1 = Grid.of(9, 5);
-		final var grid2 = fillGrid(Grid.of(9, 5));
+		final var grid1 = IntGrid.of(9, 5);
+		final var grid2 = fillGrid(IntGrid.of(9, 5));
 
 		assertEquals(grid1, grid1);
 		assertEquals(grid2, grid2);
@@ -78,7 +78,7 @@ public final class GridTest {
 
 	@Test
 	public void testToString() {
-		final var grid = fillGrid(Grid.of(9, 5));
+		final var grid = fillGrid(IntGrid.of(9, 5));
 
 		assertEquals("columns=9, rows=5, values=\n" //
 				+ "11, 21, 31, 41, 51, 61, 71, 81, 91\n" //
@@ -92,7 +92,7 @@ public final class GridTest {
 		assertEquals("rowIndex=3, row=[13, 23, 33, 43, 53, 63, 73, 83, 93]", grid.row(3).toString());
 	}
 
-	private static Grid fillGrid(final Grid grid) {
+	private static IntGrid fillGrid(final IntGrid grid) {
 		for (var columnIndex = 1; columnIndex <= grid.columns(); columnIndex++) {
 			for (var rowIndex = 1; rowIndex <= grid.rows(); rowIndex++) {
 				grid.set(columnIndex, rowIndex, columnIndex * 10 + rowIndex);

@@ -8,7 +8,7 @@ import java.util.Objects;
  * rows. Values can be accessed by column and row coordinates. These coordinates
  * are one-based.
  */
-public final class Grid {
+public final class IntGrid {
 
 	/**
 	 * Creates a new grid with the given column and row count.
@@ -17,8 +17,8 @@ public final class Grid {
 	 * @param rows    the number of rows
 	 * @return a new grid with columns by rows values
 	 */
-	public static Grid of(final int columns, final int rows) {
-		return new Grid(columns, rows);
+	public static IntGrid of(final int columns, final int rows) {
+		return new IntGrid(columns, rows);
 	}
 
 	/**
@@ -27,15 +27,15 @@ public final class Grid {
 	 * @param original the original to copy from
 	 * @return an independent copy
 	 */
-	public static Grid copyOf(final Grid original) {
-		return new Grid(original);
+	public static IntGrid copyOf(final IntGrid original) {
+		return new IntGrid(original);
 	}
 
 	private final int columns;
 	private final int rows;
 	private final int[] values;
 
-	private Grid(final int columns, final int rows) {
+	private IntGrid(final int columns, final int rows) {
 		if (columns <= 0)
 			throw new IllegalArgumentException("columns must be > 0");
 		if (rows <= 0)
@@ -46,7 +46,7 @@ public final class Grid {
 		this.values = new int[this.columns * this.rows];
 	}
 
-	private Grid(final Grid other) {
+	private IntGrid(final IntGrid other) {
 		this.columns = other.columns;
 		this.rows = other.rows;
 		this.values = Arrays.copyOf(other.values, other.values.length);
@@ -100,8 +100,8 @@ public final class Grid {
 	 * @param columnIndex the one-based column index
 	 * @return a column object
 	 */
-	public Column column(int columnIndex) {
-		return Column.of(this, validColumn(columnIndex));
+	public IntColumn column(int columnIndex) {
+		return IntColumn.of(this, validColumn(columnIndex));
 	}
 
 	/**
@@ -110,8 +110,8 @@ public final class Grid {
 	 * @param rowIndex the one-based row index
 	 * @return a row object
 	 */
-	public Row row(int rowIndex) {
-		return Row.of(this, validRow(rowIndex));
+	public IntRow row(int rowIndex) {
+		return IntRow.of(this, validRow(rowIndex));
 	}
 
 	/**
@@ -123,8 +123,8 @@ public final class Grid {
 	 * @param rows        the number of rows in the section
 	 * @return a grid representing the section
 	 */
-	public Section section(int startColumn, int startRow, int columns, int rows) {
-		return Section.of(this, startColumn, startRow, columns, rows);
+	public IntSection section(int startColumn, int startRow, int columns, int rows) {
+		return IntSection.of(this, startColumn, startRow, columns, rows);
 	}
 
 	private int index(final int columnIndex, final int rowIndex) {
@@ -154,7 +154,7 @@ public final class Grid {
 			return true;
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
-		final var other = (Grid) obj;
+		final var other = (IntGrid) obj;
 		return this.columns == other.columns && this.rows == other.rows && Arrays.equals(this.values, other.values);
 	}
 

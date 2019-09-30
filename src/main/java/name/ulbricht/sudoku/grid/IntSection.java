@@ -5,20 +5,20 @@ import java.util.Objects;
 /**
  * Represents a section of a grid which is a grid itself.
  */
-public final class Section {
+public final class IntSection {
 
-	static Section of(final Grid grid, final int startColumnIndex, final int startRowIndex, final int columns,
+	static IntSection of(final IntGrid grid, final int startColumnIndex, final int startRowIndex, final int columns,
 			final int rows) {
-		return new Section(grid, startColumnIndex, startRowIndex, columns, rows);
+		return new IntSection(grid, startColumnIndex, startRowIndex, columns, rows);
 	}
 
-	private final Grid grid;
+	private final IntGrid grid;
 	private final int startColumnIndex;
 	private final int startRowIndex;
 	private final int columns;
 	private final int rows;
 
-	private Section(final Grid grid, final int startColumnIndex, final int startRowIndex, final int columns,
+	private IntSection(final IntGrid grid, final int startColumnIndex, final int startRowIndex, final int columns,
 			final int rows) {
 
 		this.grid = Objects.requireNonNull(grid);
