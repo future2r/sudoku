@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public final class SudokuFileTest {
 
 	@ParameterizedTest
-	@ValueSource(strings = { "empty", "initial", "solved" })
+	@ValueSource(strings = { "empty", "initial1", "solved1" })
 	public void parseWriteFiles(final String fileName) throws IOException {
 		// parse the file
 		final var grid = SudokuFile.parse(resolveFileName(fileName));

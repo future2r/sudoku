@@ -221,27 +221,32 @@ public final class SudokuGrid {
 			this.grid.set(columnIndex, rowIndex, abs(this.grid.get(columnIndex, rowIndex)));
 	}
 
-	/**
-	 * An empty array, meaning no value is accepted.
-	 */
-	private static final int[] NOTHING_ACCEPTED = {};
+	public boolean solved() {
+		for (var rowIndex = 1; rowIndex <= GRID_SIZE; rowIndex++) {
+			for (var columnIndex = 1; columnIndex <= GRID_SIZE; columnIndex++) {
+				if (empty(columnIndex, rowIndex))
+					return false;
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * Returns all values that will be candidates for this cell by the Sudoku rules.
-	 * The candidates depend on the values of other cells in the column, row
-	 * and box. If the cell already has a value, an empty array is returned. The
-	 * returned array contains only unique accepted values without
-	 * {@link #EMPTY_VALUE}. For an empty cell at least one value will be accepted.
+	 * The candidates depend on the values of other cells in the column, row and
+	 * box. If the cell already has a value or there are no candidates for this
+	 * cell, {@code null} is returned. The returned array contains only unique
+	 * accepted values without {@link #EMPTY_VALUE}.
 	 * 
 	 * @param columnIndex the column index of the cell (one-based)
 	 * @param rowIndex    the row index of the cell (one-based)
-	 * @return an array with candidates
+	 * @return an array with candidates or {@code null}
 	 * @throws IndexOutOfBoundsException if the column index or the row index is
 	 *                                   invalid
 	 */
 	public int[] candidates(final int columnIndex, final int rowIndex) throws IndexOutOfBoundsException {
 		if (!empty(columnIndex, rowIndex))
-			return NOTHING_ACCEPTED;
+			return null;
 
 		final var candidates = new int[MAX_VALUE - MIN_VALUE + 1];
 		var candidatesdIndex = 0;
@@ -257,7 +262,11 @@ public final class SudokuGrid {
 				candidatesdIndex++;
 			}
 		}
-		return Arrays.copyOf(candidates, candidatesdIndex);
+
+		if (candidatesdIndex > 0)
+			return Arrays.copyOf(candidates, candidatesdIndex);
+
+		return null;
 	}
 
 	private static int validValue(final int value) throws IllegalArgumentException {

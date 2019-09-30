@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -232,24 +233,24 @@ public final class SudokuGridTest {
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRows")
-	public void testAcceptedInitial(final int columnIndex, final int rowIndex) {
+	public void testCandidatesInitial(final int columnIndex, final int rowIndex) {
 		// create initial grid
 		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
 
 		if (grid.empty(columnIndex, rowIndex))
 			assertTrue(grid.candidates(columnIndex, rowIndex).length > 0);
 		else
-			assertEquals(0, grid.candidates(columnIndex, rowIndex).length);
+			assertNull(grid.candidates(columnIndex, rowIndex));
 	}
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRows")
-	public void testAcceptedSolved(final int columnIndex, final int rowIndex) {
+	public void testCandidatesSolved(final int columnIndex, final int rowIndex) {
 		// create initial grid
 		final var grid = SudokuGrid.ofLocked(Sudokus.SOLVED_PATTERN);
 
 		// all cells are filled, nothing is accepted
-		assertEquals(0, grid.candidates(columnIndex, rowIndex).length);
+		assertNull(grid.candidates(columnIndex, rowIndex));
 	}
 
 	@Test
