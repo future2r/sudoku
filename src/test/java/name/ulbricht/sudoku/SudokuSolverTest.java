@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public final class SudokuSolverTest {
 
 	@ParameterizedTest
-	@ValueSource(ints = { 1, 2 })
+	@ValueSource(ints = { 1, 2, 3 })
 	public void testUniqueSolution(final int number) throws IOException {
 		final var initialGrid = Sudokus.load("initial" + number);
 		final var solvedGrid = Sudokus.load("solved" + number);
