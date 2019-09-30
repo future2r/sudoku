@@ -36,9 +36,9 @@ public final class SudokuSolver {
 				return List.of(grid);
 
 			changed = false;
-			for (var rowIndex = 1; rowIndex <= SudokuGrid.GRID_SIZE; rowIndex++) {
-				for (var columnIndex = 1; columnIndex <= SudokuGrid.GRID_SIZE; columnIndex++) {
 
+			for (var columnIndex = 1; columnIndex <= SudokuGrid.GRID_SIZE; columnIndex++) {
+				for (var rowIndex = 1; rowIndex <= SudokuGrid.GRID_SIZE; rowIndex++) {
 					final var candidates = grid.candidates(columnIndex, rowIndex);
 					if (candidates != null) {
 						if (candidates.length == 1) {
