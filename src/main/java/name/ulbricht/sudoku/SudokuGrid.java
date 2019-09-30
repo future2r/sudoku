@@ -227,24 +227,24 @@ public final class SudokuGrid {
 	private static final int[] NOTHING_ACCEPTED = {};
 
 	/**
-	 * Returns all values that will be accepted for this cell by the Sudoku rules.
-	 * The accepted values depend on the values of other cells in the column, row
+	 * Returns all values that will be candidates for this cell by the Sudoku rules.
+	 * The candidates depend on the values of other cells in the column, row
 	 * and box. If the cell already has a value, an empty array is returned. The
 	 * returned array contains only unique accepted values without
 	 * {@link #EMPTY_VALUE}. For an empty cell at least one value will be accepted.
 	 * 
 	 * @param columnIndex the column index of the cell (one-based)
 	 * @param rowIndex    the row index of the cell (one-based)
-	 * @return an array with accepted values
+	 * @return an array with candidates
 	 * @throws IndexOutOfBoundsException if the column index or the row index is
 	 *                                   invalid
 	 */
-	public int[] accepted(final int columnIndex, final int rowIndex) throws IndexOutOfBoundsException {
+	public int[] candidates(final int columnIndex, final int rowIndex) throws IndexOutOfBoundsException {
 		if (!empty(columnIndex, rowIndex))
 			return NOTHING_ACCEPTED;
 
-		final var acceptedValues = new int[MAX_VALUE - MIN_VALUE + 1];
-		var acceptedIndex = 0;
+		final var candidates = new int[MAX_VALUE - MIN_VALUE + 1];
+		var candidatesdIndex = 0;
 
 		final var box = this.grid.section(boxStart(columnIndex), boxStart(rowIndex), BOX_SIZE, BOX_SIZE);
 		final var column = this.grid.column(columnIndex);
@@ -253,11 +253,11 @@ public final class SudokuGrid {
 		for (var value = MIN_VALUE; value <= MAX_VALUE; value++) {
 
 			if (!(existsInBox(box, value) || existsInColumn(column, value) || existsInRow(row, value))) {
-				acceptedValues[acceptedIndex] = value;
-				acceptedIndex++;
+				candidates[candidatesdIndex] = value;
+				candidatesdIndex++;
 			}
 		}
-		return Arrays.copyOf(acceptedValues, acceptedIndex);
+		return Arrays.copyOf(candidates, candidatesdIndex);
 	}
 
 	private static int validValue(final int value) throws IllegalArgumentException {
