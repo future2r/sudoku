@@ -21,8 +21,8 @@ public final class SudokuGridTest {
 
 	public static Stream<Arguments> allColumnsAndRows() {
 		final var builder = Stream.<Arguments>builder();
-		for (int columnIndex = 1; columnIndex <= SudokuGrid.GRID_SIZE; columnIndex++) {
-			for (int rowIndex = 1; rowIndex <= SudokuGrid.GRID_SIZE; rowIndex++) {
+		for (int columnIndex = 1; columnIndex <= 9; columnIndex++) {
+			for (int rowIndex = 1; rowIndex <= 9; rowIndex++) {
 				builder.add(Arguments.of(columnIndex, rowIndex));
 			}
 		}
@@ -31,9 +31,9 @@ public final class SudokuGridTest {
 
 	public static Stream<Arguments> allColumnsAndRowsAndValues() {
 		final var builder = Stream.<Arguments>builder();
-		for (var columnIndex = 1; columnIndex <= SudokuGrid.GRID_SIZE; columnIndex++) {
-			for (var rowIndex = 1; rowIndex <= SudokuGrid.GRID_SIZE; rowIndex++) {
-				for (var value = SudokuGrid.MIN_VALUE; value <= SudokuGrid.MAX_VALUE; value++) {
+		for (var columnIndex = 1; columnIndex <= 9; columnIndex++) {
+			for (var rowIndex = 1; rowIndex <= 9; rowIndex++) {
+				for (var value = 1; value <= 9; value++) {
 					builder.add(Arguments.of(columnIndex, rowIndex, value));
 				}
 			}
@@ -46,7 +46,7 @@ public final class SudokuGridTest {
 	public void testCreateEmpty(final int columnIndex, final int rowIndex) {
 		final var grid = SudokuGrid.empty();
 		assertTrue(grid.empty(columnIndex, rowIndex));
-		assertEquals(SudokuGrid.EMPTY_VALUE, grid.get(columnIndex, rowIndex));
+		assertEquals(0, grid.get(columnIndex, rowIndex));
 		assertFalse(grid.locked(columnIndex, rowIndex));
 	}
 
@@ -69,7 +69,7 @@ public final class SudokuGridTest {
 
 		if (!tested) {
 			assertTrue(grid.empty(columnIndex, rowIndex));
-			assertEquals(SudokuGrid.EMPTY_VALUE, grid.get(columnIndex, rowIndex));
+			assertEquals(0, grid.get(columnIndex, rowIndex));
 			assertFalse(grid.locked(columnIndex, rowIndex));
 		}
 	}
@@ -93,7 +93,7 @@ public final class SudokuGridTest {
 
 		if (!tested) {
 			assertTrue(grid.empty(columnIndex, rowIndex));
-			assertEquals(SudokuGrid.EMPTY_VALUE, grid.get(columnIndex, rowIndex));
+			assertEquals(0, grid.get(columnIndex, rowIndex));
 			assertFalse(grid.locked(columnIndex, rowIndex));
 		}
 	}
@@ -109,51 +109,51 @@ public final class SudokuGridTest {
 
 		grid.clear(columnIndex, rowIndex);
 		assertTrue(grid.empty(columnIndex, rowIndex));
-		assertEquals(SudokuGrid.EMPTY_VALUE, grid.get(columnIndex, rowIndex));
+		assertEquals(0, grid.get(columnIndex, rowIndex));
 	}
 
 	@ParameterizedTest
 	@ValueSource(ints = { -100, -10, -1, 0, 10, 100 })
 	public void testInvalidColumn(final int columnIndex) {
 		final var grid = SudokuGrid.empty();
-		final var expectedMessage = "Invalid column index: " + columnIndex;
+		final var expectedMessage = "Invalid column: " + columnIndex;
 
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.get(columnIndex, 1)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.get(columnIndex, 1)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.set(columnIndex, 1, 3)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.set(columnIndex, 1, 3)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.clear(columnIndex, 1)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.clear(columnIndex, 1)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.empty(columnIndex, 1)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.empty(columnIndex, 1)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.lock(columnIndex, 1, 3)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.lock(columnIndex, 1, 3)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.unlock(columnIndex, 1)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.unlock(columnIndex, 1)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.locked(columnIndex, 1)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.locked(columnIndex, 1)).getMessage());
 	}
 
 	@ParameterizedTest
 	@ValueSource(ints = { -100, -10, -1, 0, 10, 100 })
 	public void testInvalidRow(final int rowIndex) {
 		final var grid = SudokuGrid.empty();
-		final var expectedMessage = "Invalid row index: " + rowIndex;
+		final var expectedMessage = "Invalid row: " + rowIndex;
 
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.get(1, rowIndex)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.get(1, rowIndex)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.set(1, rowIndex, 3)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.set(1, rowIndex, 3)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.clear(1, rowIndex)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.clear(1, rowIndex)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.empty(1, rowIndex)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.empty(1, rowIndex)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.lock(1, rowIndex, 3)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.lock(1, rowIndex, 3)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.unlock(1, rowIndex)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.unlock(1, rowIndex)).getMessage());
 		assertEquals(expectedMessage,
-				assertThrows(IndexOutOfBoundsException.class, () -> grid.locked(1, rowIndex)).getMessage());
+				assertThrows(IllegalArgumentException.class, () -> grid.locked(1, rowIndex)).getMessage());
 	}
 
 	@ParameterizedTest
@@ -188,8 +188,8 @@ public final class SudokuGridTest {
 	public void testLockEmpty(final int columnIndex, final int rowIndex) {
 		final var grid = SudokuGrid.empty();
 
-		assertEquals("Cannot lock empty cell", assertThrows(IllegalArgumentException.class,
-				() -> grid.lock(columnIndex, rowIndex, SudokuGrid.EMPTY_VALUE)).getMessage());
+		assertEquals("Cannot lock empty cell",
+				assertThrows(IllegalArgumentException.class, () -> grid.lock(columnIndex, rowIndex, 0)).getMessage());
 	}
 
 	@ParameterizedTest
@@ -204,7 +204,7 @@ public final class SudokuGridTest {
 		// same value in same box
 		if (value == 3 && (columnIndex >= 7 && columnIndex <= 9) && (rowIndex >= 4 && rowIndex <= 6)
 				&& !(columnIndex == 8 && rowIndex == 4)) {
-			assertEquals("value 3 already exists in box",
+			assertEquals("value 3 already exists",
 					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value))
 							.getMessage());
 			tested = true;
@@ -212,7 +212,7 @@ public final class SudokuGridTest {
 
 		// same value in same column
 		if (!tested && value == 3 && columnIndex == 8 && rowIndex != 4) {
-			assertEquals("value 3 already exists in column " + columnIndex,
+			assertEquals("value 3 already exists",
 					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value))
 							.getMessage());
 			tested = true;
@@ -220,7 +220,7 @@ public final class SudokuGridTest {
 
 		// same value in same row
 		if (!tested && value == 3 && rowIndex == 4 && columnIndex != 8) {
-			assertEquals("value 3 already exists in row " + rowIndex,
+			assertEquals("value 3 already exists",
 					assertThrows(RuleViolationException.class, () -> grid.set(columnIndex, rowIndex, value))
 							.getMessage());
 			tested = true;

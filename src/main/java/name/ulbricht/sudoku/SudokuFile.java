@@ -103,7 +103,7 @@ public final class SudokuFile {
 			var row = 1;
 			String line = null;
 			while ((line = br.readLine()) != null) {
-				if (row > SudokuGrid.GRID_SIZE)
+				if (row > 9)
 					throw new IOException("Too many rows");
 
 				if (line.length() > 0 && line.charAt(0) == COMMENT_PREFIX)
@@ -113,7 +113,7 @@ public final class SudokuFile {
 				row++;
 			}
 
-			if (row < SudokuGrid.GRID_SIZE)
+			if (row < 9)
 				throw new IOException("Too few rows");
 
 			return grid;
@@ -157,10 +157,10 @@ public final class SudokuFile {
 	 */
 	private static void parseLine(final SudokuGrid grid, final int row, final String line, final boolean locked)
 			throws IOException {
-		if (line.length() != SudokuGrid.GRID_SIZE)
+		if (line.length() != 9)
 			throw new IOException("Unexpected line length: " + line.length());
 
-		for (var column = 1; column <= SudokuGrid.GRID_SIZE; column++) {
+		for (var column = 1; column <= 9; column++) {
 			var c = line.charAt(column - 1);
 
 			if (c == EMPTY_CELL)
@@ -214,12 +214,12 @@ public final class SudokuFile {
 	public static void write(final Writer out, final SudokuGrid grid) throws IOException {
 		final var lineSeparator = System.getProperty("line.separator");
 
-		for (var row = 1; row <= SudokuGrid.GRID_SIZE; row++) {
+		for (var row = 1; row <= 9; row++) {
 			if (row > 1)
 				out.write(lineSeparator);
-			for (var column = 1; column <= SudokuGrid.GRID_SIZE; column++) {
+			for (var column = 1; column <= 9; column++) {
 				final var value = grid.get(column, row);
-				if (value == SudokuGrid.EMPTY_VALUE)
+				if (value == 0)
 					out.write(EMPTY_CELL);
 				else
 					out.write(value + 0x30);

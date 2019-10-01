@@ -27,8 +27,8 @@ public final class SudokuSolver {
 	private static List<SudokuGrid> solve(final SudokuGrid grid) throws RuleViolationException {
 
 		int[] fewestCandidates = null;
-		var fewestCanddiatesColumnIndex = 0;
-		var fewestCanddiatesRowIndex = 0;
+		var fewestCanddiatesColumn = 0;
+		var fewestCanddiatesRow = 0;
 
 		boolean changed;
 		do {
@@ -37,22 +37,22 @@ public final class SudokuSolver {
 
 			changed = false;
 
-			for (var columnIndex = 1; columnIndex <= SudokuGrid.GRID_SIZE; columnIndex++) {
-				for (var rowIndex = 1; rowIndex <= SudokuGrid.GRID_SIZE; rowIndex++) {
-					final var candidates = grid.candidates(columnIndex, rowIndex);
+			for (var column = 1; column <= 9; column++) {
+				for (var row = 1; row <= 9; row++) {
+					final var candidates = grid.candidates(column, row);
 					if (candidates != null) {
 						if (candidates.length == 1) {
-							grid.set(columnIndex, rowIndex, candidates[0]);
+							grid.set(column, row, candidates[0]);
 							changed = true;
 							fewestCandidates = null;
-							fewestCanddiatesColumnIndex = 0;
-							fewestCanddiatesRowIndex = 0;
+							fewestCanddiatesColumn = 0;
+							fewestCanddiatesRow = 0;
 							break;
 						}
 						if (fewestCandidates == null || candidates.length < fewestCandidates.length) {
 							fewestCandidates = candidates;
-							fewestCanddiatesColumnIndex = columnIndex;
-							fewestCanddiatesRowIndex = rowIndex;
+							fewestCanddiatesColumn = column;
+							fewestCanddiatesRow = row;
 						}
 					}
 				}
@@ -65,7 +65,7 @@ public final class SudokuSolver {
 			final var solutions = new ArrayList<SudokuGrid>();
 			for (var candidate : fewestCandidates) {
 				final var copy = SudokuGrid.copyOf(grid);
-				copy.set(fewestCanddiatesColumnIndex, fewestCanddiatesRowIndex, candidate);
+				copy.set(fewestCanddiatesColumn, fewestCanddiatesRow, candidate);
 				solutions.addAll(solve(copy));
 			}
 			return solutions;
