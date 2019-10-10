@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<style>
+		body {
+			margin: 20px;
+			background-color: black;
+			color: #757575;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+
+		.grid-table {
+			display: table;
+		}
+
+		.grid-row {
+			display: table-row;
+		}
+
+		.grid-cell {
+			display: table-cell;
+			background-color: #212028;
+			border-style: solid;
+			border-color: black;
+			border-width: 1px;
+			width: 70px;
+			height: 70px;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.left-edge-cell {
+			border-left-width: 3px;
+		}
+
+		.right-edge-cell {
+			border-right-width: 3px;
+		}
+
+		.top-edge-cell {
+			border-top-width: 3px;
+		}
+
+		.bottom-edge-cell {
+			border-bottom-width: 3px;
+		}
+
+		.value {
+			font-size: 24pt;
+		}
+
+		.fixed {
+			color: #4A596C;
+		}
+
+		.candidates-table {
+			display: table;
+			margin: 0 auto;
+		}
+
+		.candidates-row {
+			display: table-row;
+		}
+
+		.candidates-cell {
+			display: table-cell;
+			font-size: 7pt;
+			width: 20px;
+			height: 20px;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.selected-column {
+			background-color: #191919;
+		}
+
+		.selected-row {
+			background-color: #191919;
+		}
+
+		.selected-box {
+			background-color: #191919;
+		}
+
+		.selected-cell {
+			background-color: #101010;
+		}
+	</style>
+	<script>
+		function createGrid(gridAnchor, gridId) {
+			const gridTemplate = document.getElementById('grid-template').content.firstElementChild;
+			const gridRowTemplate = document.getElementById('grid-row-template').content.firstElementChild;
+			const gridCellTemplate = document.getElementById('grid-cell-template').content.firstElementChild;
+
+			const gridElement = document.importNode(gridTemplate, true);
+			gridElement.id = gridId;
+			gridAnchor.appendChild(gridElement);
+
+			for (row = 1; row <= 9; row++) {
+				const gridRowElement = document.importNode(gridRowTemplate, true);
+				gridElement.appendChild(gridRowElement);
+
+				for (column = 1; column <= 9; column++) {
+					const gridCellElement = document.importNode(gridCellTemplate, true);
+					gridCellElement.id = createGridCellId(gridId, column, row);
+					if ((column % 3) == 1) gridCellElement.classList.add("left-edge-cell");
+					if ((column % 3) == 0) gridCellElement.classList.add("right-edge-cell");
+					if ((row % 3) == 1) gridCellElement.classList.add("top-edge-cell");
+					if ((row % 3) == 0) gridCellElement.classList.add("bottom-edge-cell");
+					gridRowElement.appendChild(gridCellElement);
+
+					setGridCellCandidates(gridId, column, row, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+				}
+			}
+		}
+
+		function setGridCellCandidates(gridId, column, row, candidates) {
+			const gridCellId = createGridCellId(gridId, column, row);
+			const gridCellElement = document.getElementById(gridCellId);
+			removeChildren(gridCellElement);
+
+			const candidatesTemplate = document.getElementById('candidates-template').content.firstElementChild;
+			const candidatesRowTemplate = document.getElementById('candidates-row-template').content.firstElementChild;
+			const candidatesCellTemplate = document.getElementById('candidates-cell-template').content.firstElementChild;
+
+			const candidatesElement = document.importNode(candidatesTemplate, true);
+			gridCellElement.appendChild(candidatesElement);
+
+			for (candidatesRow = 1; candidatesRow <= 3; candidatesRow++) {
+				const candidatesRowElement = document.importNode(candidatesRowTemplate, true);
+				for (candidatesColumn = 1; candidatesColumn <= 3; candidatesColumn++) {
+					const candidatesCellElement = document.importNode(candidatesCellTemplate, true);
+					const candidate = ((candidatesRow - 1) * 3 + candidatesColumn);
+					if (candidates.indexOf(candidate) >= 0) candidatesCellElement.innerText = candidate;
+					candidatesRowElement.appendChild(candidatesCellElement);
+				}
+				candidatesElement.appendChild(candidatesRowElement);
+			}
+		}
+
+		function setGridCellValue(gridId, column, row, value, fixed) {
+			const gridCellId = createGridCellId(gridId, column, row);
+			const gridCellElement = document.getElementById(gridCellId);
+			removeChildren(gridCellElement);
+
+			const valueTemplate = document.getElementById('value-template').content.firstElementChild;
+			const valueElement = document.importNode(valueTemplate, true);
+			if (fixed) valueElement.classList.add("fixed");
+			valueElement.innerText = value;
+			gridCellElement.appendChild(valueElement);
+		}
+
+		function selectGridCell(gridId, selectColumn, selectRow) {
+			const boxStartRow = Math.floor((selectRow - 1) / 3) * 3 + 1;
+			const boxEndRow = boxStartRow + 2;
+			const boxStartColumn = Math.floor((selectColumn - 1) / 3) * 3 + 1;
+			const boxEndColumn = boxStartColumn + 2;
+
+			for (row = 1; row <= 9; row++) {
+				for (column = 1; column <= 9; column++) {
+					const gridCellId = createGridCellId(gridId, column, row);
+					const gridCellElement = document.getElementById(gridCellId);
+
+					// remove old selection
+					gridCellElement.classList.remove("selected-cell");
+					gridCellElement.classList.remove("selected-box");
+					gridCellElement.classList.remove("selected-row");
+					gridCellElement.classList.remove("selected-column");
+
+					// set new selection
+					if (row == selectRow && column == selectColumn) {
+						// selected cell
+						gridCellElement.classList.add("selected-cell");
+					} else if (row >= boxStartRow && row <= boxEndRow && column >= boxStartColumn && column <= boxEndColumn) {
+						// selected box
+						gridCellElement.classList.add("selected-box");
+					} else if (row == selectRow) {
+						// selected row
+						gridCellElement.classList.add("selected-row");
+					} else if (column == selectColumn) {
+						// selected column
+						gridCellElement.classList.add("selected-column");
+					}
+				}
+			}
+		}
+
+		function createGridCellId(gridId, column, row) {
+			return gridId + '-cell-' + column + '-' + row;
+		}
+
+		function removeChildren(node) {
+			while (node.hasChildNodes()) node.removeChild(node.lastChild);
+		}
+	</script>
+</head>
+
+<body>
+	<template id="grid-template">
+		<div class="grid-table"></div>
+	</template>
+
+	<template id="grid-row-template">
+		<div class="grid-row"></div>
+	</template>
+
+	<template id="grid-cell-template">
+		<div class="grid-cell"></div>
+	</template>
+
+	<template id="value-template">
+		<div class="value">?</div>
+	</template>
+
+	<template id="candidates-template">
+		<div class="candidates-table"></div>
+	</template>
+
+	<template id="candidates-row-template">
+		<div class="candidates-row"></div>
+	</template>
+
+	<template id="candidates-cell-template">
+		<div class="candidates-cell">&nbsp;</div>
+	</template>
+
+	<p>First Grid</p>
+	<div id="first-grid-anchor"></div>
+
+	<p>Second Grid</p>
+	<div id="second-grid-anchor"></div>
+
+	<p>Third Grid</p>
+	<div id="third-grid-anchor"></div>
+
+	<script>
+		const firstGridId = 'first';
+		createGrid(document.getElementById('first-grid-anchor'), firstGridId);
+		setGridCellValue(firstGridId, 3, 2, 5);
+		setGridCellValue(firstGridId, 4, 7, 9, true);
+		setGridCellValue(firstGridId, 7, 6, 1);
+		setGridCellCandidates(firstGridId, 7, 6, [5, 6, 9]);
+		selectGridCell(firstGridId, 7, 6);
+
+		const secondGridId = 'second';
+		createGrid(document.getElementById('second-grid-anchor'), secondGridId);
+		for (column = 1; column <= 9; column++) {
+			for (row = 1; row <= 9; row++) {
+				const value = Math.floor(Math.random() * 9) + 1;
+				const fixed = (column + row) % 2 == 0
+				setGridCellValue(secondGridId, column, row, value, fixed);
+			}
+		}
+
+		const thirdGridId = 'third';
+		createGrid(document.getElementById('third-grid-anchor'), thirdGridId);
+		for (column = 1; column <= 9; column++) {
+			for (row = 1; row <= 9; row++) {
+				const candidate = Math.floor(Math.random() * 9) + 1;
+				setGridCellCandidates(thirdGridId, column, row, [candidate]);
+			}
+		}
+	</script>
+</body>
+
+</html>
