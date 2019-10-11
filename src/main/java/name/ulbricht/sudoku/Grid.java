@@ -7,15 +7,15 @@ import java.util.Arrays;
 /**
  * Represents a Sudoku grid with 9 by 9 cells.
  */
-public final class SudokuGrid {
+public final class Grid {
 
 	/**
 	 * Creates a new grid with all cells empty.
 	 * 
 	 * @return a new empty grid
 	 */
-	public static SudokuGrid empty() {
-		return new SudokuGrid();
+	public static Grid empty() {
+		return new Grid();
 	}
 
 	/**
@@ -24,9 +24,9 @@ public final class SudokuGrid {
 	 * 
 	 * @param pattern the pattern describing the grid
 	 * @return a new grid
-	 * @see SudokuFile
+	 * @see GridFile
 	 */
-	public static SudokuGrid of(final String pattern) {
+	public static Grid of(final String pattern) {
 		return of(pattern, false);
 	}
 
@@ -36,15 +36,15 @@ public final class SudokuGrid {
 	 * 
 	 * @param pattern the pattern describing the grid
 	 * @return a new grid with locked cells
-	 * @see SudokuFile
+	 * @see GridFile
 	 */
-	public static SudokuGrid ofLocked(final String pattern) {
+	public static Grid ofLocked(final String pattern) {
 		return of(pattern, true);
 	}
 
-	private static SudokuGrid of(final String s, final boolean locked) {
+	private static Grid of(final String s, final boolean locked) {
 		try {
-			return SudokuFile.parse(s, locked);
+			return GridFile.parse(s, locked);
 		} catch (final IOException e) {
 			throw new IllegalArgumentException("Invalid grid definition", e);
 		}
@@ -56,8 +56,8 @@ public final class SudokuGrid {
 	 * @param original the original to copy from
 	 * @return an independent copy
 	 */
-	public static SudokuGrid copyOf(final SudokuGrid original) {
-		return new SudokuGrid(original);
+	public static Grid copyOf(final Grid original) {
+		return new Grid(original);
 	}
 
 	/**
@@ -153,11 +153,11 @@ public final class SudokuGrid {
 
 	private final int[] values;
 
-	private SudokuGrid() {
+	private Grid() {
 		this.values = new int[81];
 	}
 
-	private SudokuGrid(final SudokuGrid other) {
+	private Grid(final Grid other) {
 		this.values = Arrays.copyOf(other.values, 81);
 	}
 
@@ -365,7 +365,7 @@ public final class SudokuGrid {
 			return true;
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
-		final var other = (SudokuGrid) obj;
+		final var other = (Grid) obj;
 		return Arrays.equals(this.values, other.values);
 	}
 

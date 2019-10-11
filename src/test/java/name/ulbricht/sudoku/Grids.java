@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-final class Sudokus {
+final class Grids {
 
 	static final String INITIAL_PATTERN = "5.1.3..6.\n" //
 			+ "...4..2..\n" //
@@ -30,8 +30,8 @@ final class Sudokus {
 			+ "285793614\n" //
 			+ "379146852";
 
-	static SudokuGrid load(final String baseName) throws IOException {
+	static Grid load(final String baseName) throws IOException {
 		final var fileName = Paths.get(System.getProperty("user.dir"), "files", baseName + ".sudoku");
-		return SudokuGrid.of(Files.readString(fileName));
+		return Grid.of(Files.readString(fileName));
 	}
 }

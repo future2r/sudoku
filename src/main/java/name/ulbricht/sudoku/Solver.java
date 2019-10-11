@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class SudokuSolver {
+public final class Solver {
 
-	public static SudokuSolver of(final SudokuGrid grid) {
-		return new SudokuSolver(grid);
+	public static Solver of(final Grid grid) {
+		return new Solver(grid);
 	}
 
-	private SudokuGrid grid;
+	private Grid grid;
 
-	private SudokuSolver(final SudokuGrid grid) {
+	private Solver(final Grid grid) {
 		this.grid = Objects.requireNonNull(grid, "grid must not be null");
 	}
 
-	public List<SudokuGrid> solve() {
+	public List<Grid> solve() {
 		try {
 			return solve(this.grid);
 		} catch (RuleViolationException ex) {
@@ -24,7 +24,7 @@ public final class SudokuSolver {
 		}
 	}
 
-	private static List<SudokuGrid> solve(final SudokuGrid grid) throws RuleViolationException {
+	private static List<Grid> solve(final Grid grid) throws RuleViolationException {
 
 		int[] fewestCandidates = null;
 		var fewestCanddiatesColumn = 0;
@@ -62,9 +62,9 @@ public final class SudokuSolver {
 		} while (changed);
 
 		if (fewestCandidates != null) {
-			final var solutions = new ArrayList<SudokuGrid>();
+			final var solutions = new ArrayList<Grid>();
 			for (var candidate : fewestCandidates) {
-				final var copy = SudokuGrid.copyOf(grid);
+				final var copy = Grid.copyOf(grid);
 				copy.set(fewestCanddiatesColumn, fewestCanddiatesRow, candidate);
 				solutions.addAll(solve(copy));
 			}

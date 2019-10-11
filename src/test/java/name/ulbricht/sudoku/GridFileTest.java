@@ -11,18 +11,18 @@ import java.nio.file.Paths;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public final class SudokuFileTest {
+public final class GridFileTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = { "empty", "initial1", "solved1" })
 	public void parseWriteFiles(final String fileName) throws IOException {
 		// parse the file
-		final var grid = SudokuFile.parse(resolveFileName(fileName));
+		final var grid = GridFile.parse(resolveFileName(fileName));
 
 		// write the file to string
 		final String[] fileContent;
 		try (final var writer = new StringWriter()) {
-			SudokuFile.write(writer, grid);
+			GridFile.write(writer, grid);
 			writer.flush();
 			fileContent = writer.toString().split("\\r\\n?|\\n");
 		}

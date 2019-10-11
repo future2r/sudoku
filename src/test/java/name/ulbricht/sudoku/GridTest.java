@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public final class SudokuGridTest {
+public final class GridTest {
 
 	public static Stream<Arguments> allColumnsAndRows() {
 		final var builder = Stream.<Arguments>builder();
@@ -44,7 +44,7 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRows")
 	public void testCreateEmpty(final int columnIndex, final int rowIndex) {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 		assertTrue(grid.empty(columnIndex, rowIndex));
 		assertEquals(0, grid.get(columnIndex, rowIndex));
 		assertFalse(grid.locked(columnIndex, rowIndex));
@@ -53,11 +53,11 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRows")
 	public void testOf(final int columnIndex, final int rowIndex) {
-		final var grid = SudokuGrid.of(Sudokus.INITIAL_PATTERN);
+		final var grid = Grid.of(Grids.INITIAL_PATTERN);
 
 		var tested = false;
 
-		for (var cell : Sudokus.INITIAL_CELLS) {
+		for (var cell : Grids.INITIAL_CELLS) {
 			if (cell[0] == columnIndex && cell[1] == rowIndex) {
 				assertFalse(grid.empty(columnIndex, rowIndex));
 				assertEquals(cell[2], grid.get(columnIndex, rowIndex));
@@ -77,11 +77,11 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRows")
 	public void testOfLocked(final int columnIndex, final int rowIndex) {
-		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
 
 		var tested = false;
 
-		for (var cell : Sudokus.INITIAL_CELLS) {
+		for (var cell : Grids.INITIAL_CELLS) {
 			if (cell[0] == columnIndex && cell[1] == rowIndex) {
 				assertFalse(grid.empty(columnIndex, rowIndex));
 				assertEquals(cell[2], grid.get(columnIndex, rowIndex));
@@ -102,7 +102,7 @@ public final class SudokuGridTest {
 	@MethodSource("allColumnsAndRowsAndValues")
 	public void testSetGetClearValues(final int columnIndex, final int rowIndex, final int value)
 			throws RuleViolationException {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 
 		grid.set(columnIndex, rowIndex, value);
 		assertEquals(value, grid.get(columnIndex, rowIndex));
@@ -115,7 +115,7 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@ValueSource(ints = { -100, -10, -1, 0, 10, 100 })
 	public void testInvalidColumn(final int columnIndex) {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 		final var expectedMessage = "Invalid column: " + columnIndex;
 
 		assertEquals(expectedMessage,
@@ -137,7 +137,7 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@ValueSource(ints = { -100, -10, -1, 0, 10, 100 })
 	public void testInvalidRow(final int rowIndex) {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 		final var expectedMessage = "Invalid row: " + rowIndex;
 
 		assertEquals(expectedMessage,
@@ -159,7 +159,7 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@ValueSource(ints = { -1, 10 })
 	public void testInvalidValue(final int value) {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 		final var expectedMessage = "Invalid value: " + value;
 
 		assertEquals(expectedMessage,
@@ -172,7 +172,7 @@ public final class SudokuGridTest {
 	@MethodSource("allColumnsAndRowsAndValues")
 	public void testLockUnlock(final int columnIndex, final int rowIndex, final int value)
 			throws RuleViolationException {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 
 		grid.lock(columnIndex, rowIndex, value);
 		assertTrue(grid.locked(columnIndex, rowIndex));
@@ -186,7 +186,7 @@ public final class SudokuGridTest {
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRows")
 	public void testLockEmpty(final int columnIndex, final int rowIndex) {
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 
 		assertEquals("Cannot lock empty cell",
 				assertThrows(IllegalArgumentException.class, () -> grid.lock(columnIndex, rowIndex, 0)).getMessage());
@@ -196,7 +196,7 @@ public final class SudokuGridTest {
 	@MethodSource("allColumnsAndRowsAndValues")
 	public void testRules(final int columnIndex, final int rowIndex, final int value) throws RuleViolationException {
 		// set a cell
-		final var grid = SudokuGrid.empty();
+		final var grid = Grid.empty();
 		grid.set(8, 4, 3);
 
 		var tested = false;
@@ -235,7 +235,7 @@ public final class SudokuGridTest {
 	@MethodSource("allColumnsAndRows")
 	public void testCandidatesInitial(final int columnIndex, final int rowIndex) {
 		// create initial grid
-		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
 
 		if (grid.empty(columnIndex, rowIndex))
 			assertTrue(grid.candidates(columnIndex, rowIndex).length > 0);
@@ -247,7 +247,7 @@ public final class SudokuGridTest {
 	@MethodSource("allColumnsAndRows")
 	public void testCandidatesSolved(final int columnIndex, final int rowIndex) {
 		// create initial grid
-		final var grid = SudokuGrid.ofLocked(Sudokus.SOLVED_PATTERN);
+		final var grid = Grid.ofLocked(Grids.SOLVED_PATTERN);
 
 		// all cells are filled, nothing is accepted
 		assertNull(grid.candidates(columnIndex, rowIndex));
@@ -256,7 +256,7 @@ public final class SudokuGridTest {
 	@Test
 	public void testAccepted() {
 		// create initial grid
-		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
 
 		// box 1
 		assertCandidates(grid, 2, 1, 4, 8, 9);
@@ -341,7 +341,7 @@ public final class SudokuGridTest {
 		assertCandidates(grid, 9, 9, 2, 3, 5, 6, 7, 9);
 	}
 
-	private void assertCandidates(final SudokuGrid grid, final int columnIndex, final int rowIndex,
+	private void assertCandidates(final Grid grid, final int columnIndex, final int rowIndex,
 			final int... expected) {
 		final var candidates = grid.candidates(columnIndex, rowIndex);
 		assertArrayEquals(expected, candidates, String.format("cell %d,%d: expected: %s but was %s", columnIndex,
@@ -350,8 +350,8 @@ public final class SudokuGridTest {
 
 	@Test
 	public void testHashCodeAndEquals() {
-		final var grid1 = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
-		final var grid2 = SudokuGrid.ofLocked(Sudokus.SOLVED_PATTERN);
+		final var grid1 = Grid.ofLocked(Grids.INITIAL_PATTERN);
+		final var grid2 = Grid.ofLocked(Grids.SOLVED_PATTERN);
 
 		assertEquals(grid1, grid1);
 		assertEquals(grid2, grid2);
@@ -365,7 +365,7 @@ public final class SudokuGridTest {
 	@Test
 	public void testToString() throws RuleViolationException {
 		// create initial grid
-		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
 
 		// solve upper left box
 		grid.set(2, 1, 9);
@@ -394,8 +394,8 @@ public final class SudokuGridTest {
 
 	@Test
 	public void testCopy() {
-		final var grid = SudokuGrid.ofLocked(Sudokus.INITIAL_PATTERN);
-		final var copy = SudokuGrid.copyOf(grid);
+		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
+		final var copy = Grid.copyOf(grid);
 
 		assertEquals(copy, grid);
 	}
