@@ -67,7 +67,7 @@ public final class Grid {
 	 * the box). In the end, each cell has 20 dependencies. Therefore, this array
 	 * has 1.6020 entries (20 * 81).
 	 */
-	private static int[] dependencies = { //
+	private static byte[] dependencies = { //
 			1, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 6, 7, 8, 27, 36, 45, 54, 63, 72, // 0
 			0, 2, 9, 10, 11, 18, 19, 20, 3, 4, 5, 6, 7, 8, 28, 37, 46, 55, 64, 73, // 1
 			0, 1, 9, 10, 11, 18, 19, 20, 3, 4, 5, 6, 7, 8, 29, 38, 47, 56, 65, 74, // 2
@@ -151,10 +151,10 @@ public final class Grid {
 			60, 61, 62, 69, 70, 71, 78, 79, 72, 73, 74, 75, 76, 77, 8, 17, 26, 35, 44, 53,// 80
 	};
 
-	private final int[] values;
+	private final byte[] values;
 
 	private Grid() {
-		this.values = new int[81];
+		this.values = new byte[81];
 	}
 
 	private Grid(final Grid other) {
@@ -194,7 +194,7 @@ public final class Grid {
 			throw new RuleViolationException("Cannot change a locked cell");
 		if (currentValue != newValue) {
 			validateRules(index, validValue(newValue));
-			this.values[index] = newValue;
+			this.values[index] = (byte) newValue;
 		}
 	}
 
@@ -240,7 +240,7 @@ public final class Grid {
 		final var currentValue = this.values[index];
 		if (abs(currentValue) != newValue)
 			validateRules(index, newValue);
-		this.values[index] = -newValue;
+		this.values[index] = (byte) -newValue;
 	}
 
 	/**
@@ -267,7 +267,7 @@ public final class Grid {
 		final var index = index(column, row);
 		final var currentValue = this.values[index];
 		if (currentValue < 0)
-			this.values[index] = abs(currentValue);
+			this.values[index] = (byte) abs(currentValue);
 	}
 
 	public boolean solved() {
