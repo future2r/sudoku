@@ -8,12 +8,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public final class SolverTest {
-	
+
 	@ParameterizedTest
 	@ValueSource(ints = { 1, 2, 3, 4 })
 	public void testUniqueSolution(final int number) throws IOException {
-		final var initialGrid = Grids.load("initial" + number);
-		final var solvedGrid = Grids.load("solved" + number);
+		final var initialGrid = Grids.load(String.format("single %s.sudoku", number));
+		final var solvedGrid = Grids.load(String.format("single %s (solved).sudoku", number));
 
 		final var solver = Solver.of(initialGrid);
 		solver.solve();

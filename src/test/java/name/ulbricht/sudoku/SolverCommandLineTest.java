@@ -35,7 +35,7 @@ public final class SolverCommandLineTest {
 
 	@Test
 	public void testSolveFile() {
-		assertEquals(0, commandLine.run("files/initial1.sudoku"));
+		assertEquals(0, commandLine.run("files/single 1.sudoku"));
 		assertOutStartsWith(String.format("Number of solutions: 1%nSolution time: "));
 	}
 
@@ -65,7 +65,7 @@ public final class SolverCommandLineTest {
 
 	@Test
 	public void testInvalidFile() {
-		assertEquals(1, commandLine.run("src/resources/name/ulbricht/sudoku/invalid.sudoku"));
+		assertEquals(1, commandLine.run("files/invalid.sudoku"));
 		assertOutStartsWith("Could not read the Sudoku file: ");
 	}
 

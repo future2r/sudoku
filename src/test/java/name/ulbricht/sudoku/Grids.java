@@ -30,8 +30,8 @@ final class Grids {
 			+ "285793614\n" //
 			+ "379146852";
 
-	static Grid load(final String baseName) throws IOException {
-		final var fileName = Paths.get(System.getProperty("user.dir"), "files", baseName + ".sudoku");
-		return Grid.of(Files.readString(fileName));
+	static Grid load(final String fileName) throws IOException {
+		final var path = Paths.get(System.getProperty("user.dir"), "files", fileName);
+		return Grid.of(Files.readString(path));
 	}
 }

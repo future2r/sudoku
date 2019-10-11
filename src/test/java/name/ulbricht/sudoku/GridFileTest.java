@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public final class GridFileTest {
 
 	@ParameterizedTest
-	@ValueSource(strings = { "empty", "initial1", "solved1" })
+	@ValueSource(strings = { "empty", "single 1", "single 1 (solved)" })
 	public void parseWriteFiles(final String fileName) throws IOException {
 		// parse the file
 		final var grid = GridFile.parse(resolveFileName(fileName));
