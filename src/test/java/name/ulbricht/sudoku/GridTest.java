@@ -100,8 +100,7 @@ public final class GridTest {
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRowsAndValues")
-	public void testSetGetClearValues(final int columnIndex, final int rowIndex, final int value)
-			throws RuleViolationException {
+	public void testSetGetClearValues(final int columnIndex, final int rowIndex, final int value) {
 		final var grid = Grid.empty();
 
 		grid.set(columnIndex, rowIndex, value);
@@ -170,8 +169,7 @@ public final class GridTest {
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRowsAndValues")
-	public void testLockUnlock(final int columnIndex, final int rowIndex, final int value)
-			throws RuleViolationException {
+	public void testLockUnlock(final int columnIndex, final int rowIndex, final int value) {
 		final var grid = Grid.empty();
 
 		grid.lock(columnIndex, rowIndex, value);
@@ -194,7 +192,7 @@ public final class GridTest {
 
 	@ParameterizedTest
 	@MethodSource("allColumnsAndRowsAndValues")
-	public void testRules(final int columnIndex, final int rowIndex, final int value) throws RuleViolationException {
+	public void testRules(final int columnIndex, final int rowIndex, final int value) {
 		// set a cell
 		final var grid = Grid.empty();
 		grid.set(8, 4, 3);
@@ -341,8 +339,7 @@ public final class GridTest {
 		assertCandidates(grid, 9, 9, 2, 3, 5, 6, 7, 9);
 	}
 
-	private void assertCandidates(final Grid grid, final int columnIndex, final int rowIndex,
-			final int... expected) {
+	private void assertCandidates(final Grid grid, final int columnIndex, final int rowIndex, final int... expected) {
 		final var candidates = grid.candidates(columnIndex, rowIndex);
 		assertArrayEquals(expected, candidates, String.format("cell %d,%d: expected: %s but was %s", columnIndex,
 				rowIndex, Arrays.toString(expected), Arrays.toString(candidates)));
@@ -363,7 +360,7 @@ public final class GridTest {
 	}
 
 	@Test
-	public void testToString() throws RuleViolationException {
+	public void testToString() {
 		// create initial grid
 		final var grid = Grid.ofLocked(Grids.INITIAL_PATTERN);
 

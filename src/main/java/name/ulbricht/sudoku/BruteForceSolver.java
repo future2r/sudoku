@@ -3,6 +3,7 @@ package name.ulbricht.sudoku;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 final class BruteForceSolver implements Solver {
 
@@ -36,16 +37,18 @@ final class BruteForceSolver implements Solver {
 		this.solutionTime = 0;
 		final var startTime = System.currentTimeMillis();
 
-		try {
-			solve(this.grid);
-		} catch (RuleViolationException ex) {
-			throw new IllegalStateException("There shouldn't be any rule violations for candidate values", ex);
-		}
+		solve(this.grid);
 
 		this.solutionTime = System.currentTimeMillis() - startTime;
 	}
 
-	private void solve(final Grid grid) throws RuleViolationException {
+	private void addSolution(final Grid solution) {
+		synchronized (this.solutions) {
+			this.solutions.add(solution);
+		}
+	}
+
+	private void solve(final Grid grid) {
 
 		int[] fewestCandidates = null;
 		var fewestCanddiatesColumn = 0;
@@ -54,7 +57,7 @@ final class BruteForceSolver implements Solver {
 		boolean changed;
 		do {
 			if (grid.solved())
-				this.solutions.add(grid);
+				addSolution(grid);
 
 			changed = false;
 
@@ -83,11 +86,16 @@ final class BruteForceSolver implements Solver {
 		} while (changed);
 
 		if (fewestCandidates != null) {
-			for (var candidate : fewestCandidates) {
-				final var copy = Grid.copyOf(grid);
-				copy.set(fewestCanddiatesColumn, fewestCanddiatesRow, candidate);
-				solve(copy);
-			}
+			final var column = fewestCanddiatesColumn;
+			final var row = fewestCanddiatesRow;
+			IntStream.of(fewestCandidates).parallel().mapToObj(candidate -> setCandidate(grid, column, row, candidate))
+					.forEach(this::solve);
 		}
+	}
+
+	private static Grid setCandidate(final Grid original, final int column, final int row, final int value) {
+		final var copy = Grid.copyOf(original);
+		copy.set(column, row, value);
+		return copy;
 	}
 }

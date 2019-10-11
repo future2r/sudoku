@@ -3,7 +3,7 @@ package name.ulbricht.sudoku;
 /**
  * This exception is thrown if an operation would violate the Sudoku rules.
  */
-public class RuleViolationException extends Exception {
+public class RuleViolationException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
