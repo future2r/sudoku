@@ -16,9 +16,11 @@ public final class SolverTest {
 		final var solvedGrid = Grids.load("solved" + number);
 
 		final var solver = Solver.of(initialGrid);
-		final var solutions = solver.solve();
+		solver.solve();
 
-		assertEquals(1, solutions.size());
+		assertEquals(1, solver.solutionCount());
+
+		final var solutions = solver.solutions();
 		assertEquals(solvedGrid, solutions.get(0));
 	}
 }
