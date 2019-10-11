@@ -3,10 +3,18 @@
 
 <head>
 	<style>
+		:root {
+			--cell-background-color: #212028;
+			--text-color: #757575;
+			--fixed-text-color: #4A596C;
+			--selection-background-color: #191919;
+			--cell-selection-background-color: #101010;
+		}
+
 		body {
 			margin: 20px;
 			background-color: black;
-			color: #757575;
+			color: white;
 			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 		}
 
@@ -20,7 +28,7 @@
 
 		.grid-cell {
 			display: table-cell;
-			background-color: #212028;
+			background-color: var(--cell-background-color);
 			border-style: solid;
 			border-color: black;
 			border-width: 1px;
@@ -47,11 +55,12 @@
 		}
 
 		.value {
+			color: var(--text-color);
 			font-size: 24pt;
 		}
 
 		.fixed {
-			color: #4A596C;
+			color: var(--fixed-text-color);
 		}
 
 		.candidates-table {
@@ -66,6 +75,7 @@
 		.candidates-cell {
 			display: table-cell;
 			font-size: 7pt;
+			color: var(--text-color);
 			width: 20px;
 			height: 20px;
 			text-align: center;
@@ -73,19 +83,19 @@
 		}
 
 		.selected-column {
-			background-color: #191919;
+			background-color: var(--selection-background-color);
 		}
 
 		.selected-row {
-			background-color: #191919;
+			background-color: var(--selection-background-color);
 		}
 
 		.selected-box {
-			background-color: #191919;
+			background-color: var(--selection-background-color);
 		}
 
 		.selected-cell {
-			background-color: #101010;
+			background-color: var(--cell-selection-background-color)
 		}
 	</style>
 	<script>
