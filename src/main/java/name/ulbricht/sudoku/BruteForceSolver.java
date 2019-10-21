@@ -44,11 +44,14 @@ final class BruteForceSolver implements Solver {
 
 	private void addSolution(final Grid solution) {
 		synchronized (this.solutions) {
+			this.solutions.size();
 			this.solutions.add(solution);
 		}
 	}
 
 	private void solve(final Grid grid) {
+		if (this.solutions.size() >= 10)
+			return;
 
 		int[] fewestCandidates = null;
 		var fewestCanddiatesColumn = 0;
