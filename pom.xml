@@ -77,11 +77,7 @@
 				<version>3.8.1</version>
 				<configuration>
 					<release>13</release>
-					<source>13</source>
-					<target>13</target>
-					<!--
-					<compilerArgs>- -enable-preview</compilerArgs>
-					-->
+					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -91,7 +87,7 @@
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<argLine>-Djunit.jupiter.execution.parallel.enabled=true -Djunit.jupiter.execution.parallel.mode.default=concurrent</argLine>
-					<!--argLine>- -enable-preview</argLine-->
+					<argLine>--enable-preview</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
