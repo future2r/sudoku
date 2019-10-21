@@ -50,8 +50,8 @@ public final class SolverTest {
 		final var solver = Solver.of(initialGrid);
 		solver.solve();
 
-		assertTrue(solver.solutionCount() >= 10);
+		assertEquals(10, solver.solutionCount());
 		final var solutions = solver.solutions();
-		assertTrue(solutions.size() >= 10);
+		assertEquals(10, solutions.size());
 	}
 }

@@ -1,6 +1,7 @@
 package name.ulbricht.sudoku;
 
 import static java.lang.Math.abs;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -283,7 +284,7 @@ public final class Grid {
 	 * The candidates depend on the values of other cells in the column, row and
 	 * box. If the cell already has a value or there are no candidates for this
 	 * cell, {@code null} is returned. The returned array contains only unique
-	 * accepted values without {@link #EMPTY_VALUE}.
+	 * accepted values.
 	 * 
 	 * @param column the column index of the cell (one-based)
 	 * @param row    the row index of the cell (one-based)
