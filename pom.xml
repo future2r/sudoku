@@ -64,7 +64,7 @@
 									<version>[3.6.0,)</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>12</version>
+									<version>13</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
@@ -76,9 +76,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<release>12</release>
-					<source>12</source>
-					<target>12</target>
+					<release>13</release>
+					<source>13</source>
+					<target>13</target>
 					<!--
 					<compilerArgs>- -enable-preview</compilerArgs>
 					-->
